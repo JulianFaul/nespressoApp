@@ -1,1 +1,1 @@
-"# framework7template" 
+Nespresso App Prototype
