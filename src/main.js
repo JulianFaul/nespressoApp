@@ -4,6 +4,7 @@ import Vue from 'vue'
 // Import F7
 import Framework7 from 'framework7'
 
+import {store} from './store'
 // Import F7 Vue Plugin
 import Framework7Vue from 'framework7-vue'
 
@@ -24,6 +25,12 @@ import Routes from './routes.js'
 // Import App Component
 import App from './main.vue'
 
+
+// Import firebase.js and vuefire and add plugin
+import './config/firebase'
+import VueFire from 'vuefire'
+Vue.use(VueFire)
+
 // Init F7 Vue Plugin
 Vue.use(Framework7Vue)
 
@@ -31,12 +38,14 @@ Vue.use(Framework7Vue)
 new Vue({
   el: '#app',
   template: '<app/>',
+  store,
   // Init Framework7 by passing parameters here
   framework7: {
     root: '#app',
     /* Uncomment to enable Material theme: */
     // material: true,
     routes: Routes
+
   },
   // Register App Component
   components: {

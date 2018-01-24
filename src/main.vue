@@ -57,18 +57,19 @@
 		<f7-views>
 			<f7-view id="main-view" navbar-through :dynamic-navbar="true" main>
 				<!-- Navbar -->
-				<f7-navbar>
-					<f7-nav-left>
-						<f7-link icon="icon-bars" open-panel="left"></f7-link>
-					</f7-nav-left>
-					<f7-nav-center sliding>Framework7</f7-nav-center>
+				<f7-navbar layout="dark" style="color:#ffffff;">
+					<!-- <f7-nav-left>
+						<f7-link icon="icon-bars white" open-panel="left"></f7-link>
+					</f7-nav-left> -->
+					<f7-nav-center sliding><img style="width:150px;" src="./assets/images/logo.png"/></f7-nav-center>
 					<f7-nav-right>
 						<f7-link icon="icon-bars" open-panel="right"></f7-link>
 					</f7-nav-right>
 				</f7-navbar>
 				<!-- Pages -->
 				<f7-pages>
-					<f7-page>
+					<products-list></products-list>
+					<!-- <f7-page>
 						<f7-block-title>Welcome to my App</f7-block-title>
 						<f7-block inner>
 							<p>Duis sed erat ac eros ultrices pharetra id ut tellus. Praesent rhoncus enim ornare ipsum aliquet ultricies. Pellentesque sodales erat quis elementum sagittis.</p>
@@ -101,26 +102,12 @@
 								</f7-col>
 							</f7-grid>
 						</f7-block>
-					</f7-page>
+					</f7-page> -->
 				</f7-pages>
 			</f7-view>
 		</f7-views>
 		
-		<!-- Popup -->
-		<f7-popup id="popup">
-			<f7-view navbar-fixed>
-				<f7-pages>
-					<f7-page>
-						<f7-navbar title="Popup">
-							<f7-nav-right>
-								<f7-link :close-popup="true">Close</f7-link>
-							</f7-nav-right>
-						</f7-navbar>
-						<f7-block>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque, architecto. Cupiditate laudantium rem nesciunt numquam, ipsam. Voluptates omnis, a inventore atque ratione aliquam. Omnis iusto nemo quos ullam obcaecati, quod.</f7-block>
-					</f7-page>
-				</f7-pages>
-			</f7-view>
-		</f7-popup>
+		
 		
 		<!-- Login Screen -->
 		<f7-login-screen id="login-screen">
@@ -153,5 +140,18 @@
 </template>
 
 <script>
-	export default {}
+import products from "./pages/products.vue"
+	export default {
+  data() {
+    return {};
+  },
+  components:{
+	  "products-list": products
+  }
+};
 </script>
+<style>
+.navbar-fixed .page-content, .navbar-through .page-content{
+	padding-top: 10px;
+}
+</style>
