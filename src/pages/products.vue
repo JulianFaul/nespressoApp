@@ -1,5 +1,5 @@
 <template>
-  <f7-page>
+
 	<!-- <f7-block-title>Navigation</f7-block-title> -->
 	<f7-block>
 		<!-- <div>
@@ -63,7 +63,7 @@
 				</f7-col>
 			</f7-grid>
 		</f7-block> -->
-	</f7-page>
+
 </template>
 
 <script>

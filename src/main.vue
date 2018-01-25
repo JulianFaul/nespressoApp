@@ -68,9 +68,9 @@
 				</f7-navbar>
 				<!-- Pages -->
 				<f7-pages>
-					
+					<f7-page name="home-page">
 					<products-list></products-list>
-
+</f7-page>	
 					<!-- <div  style="position: absolute;top: 50px;">You are here</div> -->
 					<div style="position: absolute;top: 50px; color:red;">here ={{this.$store.state.user}} {{isUserSignedIn}}</div>
 					<div style="position: absolute;top: 80px; color:blue;">{{this.$store.state.loadedProducts}}</div>

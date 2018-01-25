@@ -48,7 +48,7 @@ export default {
 	watch:{
 		user(value){
 			if(value !== null && value !== undefined){
-				
+				this.$f7.getCurrentView().router.back({pageName:'home-page',animatePages: false})
 			}
 		}
 	},
