@@ -45,8 +45,9 @@
 						</f7-list>
 						<f7-block-title>Load page in main view</f7-block-title>
 						<f7-list>
-							<f7-list-item link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item>
-							<f7-list-item link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item>
+							<f7-list-item v-if="!isUserSignedIn" link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item>
+							<f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item>
+								<f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item>
 						</f7-list>
 					</f7-page>
 				</f7-pages>
@@ -55,6 +56,7 @@
 		
 		<!-- Main Views -->
 		<f7-views>
+			
 			<f7-view id="main-view" navbar-through :dynamic-navbar="true" main>
 				<!-- Navbar -->
 				<f7-navbar layout="dark" style="color:#ffffff;">
@@ -69,11 +71,14 @@
 				<!-- Pages -->
 				<f7-pages>
 					<f7-page name="home-page">
+						<!-- <div v-if="loading">
+		<div style="background: rgba(202, 202, 202, 0.44);width: 100%;height: 100%;position: absolute;margin: 0 auto;top: 0px;left: 0px;">
+      		<div class="preloader color-black" style="width: 50px;height: 50px;top: 50%;position: absolute;left: 0;right: 0;margin: 0 auto;"></div>
+		</div>
+	</div> -->
 					<products-list></products-list>
-</f7-page>	
+				</f7-page>	
 					<!-- <div  style="position: absolute;top: 50px;">You are here</div> -->
-					<div style="position: absolute;top: 50px; color:red;">here ={{this.$store.state.user}} {{isUserSignedIn}}</div>
-					<div style="position: absolute;top: 80px; color:blue;">{{this.$store.state.loadedProducts}}</div>
 					<!-- <f7-page>
 						<f7-block-title>Welcome to my App</f7-block-title>
 						<f7-block inner>
@@ -154,6 +159,9 @@ import products from "./pages/products.vue"
 	  "products-list": products
   },
   computed:{
+	  loading(){
+			return this.$store.getters.loading
+		},
 	  isUserSignedIn(){
 		  return this.$store.getters.user !== null && this.$store.getters.user !== undefined
 	  }

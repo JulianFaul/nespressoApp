@@ -17,10 +17,12 @@
 							</f7-list-item>
               <f7-list-item>
 								<f7-label>Confirm Password</f7-label>
-									<f7-input   required name="confirmPassword" placeholder="Confirm Password" type="password" id="confirmPassword" v-model="confirmPassword"></f7-input>
+									<f7-input required name="confirmPassword" placeholder="Confirm Password" type="password" id="confirmPassword" v-model="confirmPassword"></f7-input>
               </f7-list-item>
+							<p v-if="error">{{error.message}}</p>
            	<button class="button" style="margin: 29px auto;width: 200px;" type="submit">SignUp</button>
 				</form>
+				
 						</f7-list>
 			</div>
 	</f7-page>
@@ -32,8 +34,7 @@ export default {
     return {
       email:'',
       password:'',
-      confirmPassword:''
-      
+			confirmPassword:''
     };
   },
   computed:{
@@ -43,6 +44,12 @@ export default {
 		},
 		user(){
 			return this.$store.getters.user
+		},
+		error(){
+			return this.$store.getters.error
+		},
+		loading(){
+			return this.$store.getters.loading
 		}
 	},
 	watch:{
