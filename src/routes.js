@@ -1,12 +1,21 @@
 
 import productDetails from "./pages/productDetails"
-
+import loginPage from "./pages/loginPage"
+import signupPage from "./pages/signupPage"
 
 
 export default [
   {
     path: 'productdetails/:productId',
     component: productDetails
+  },
+  {
+    path: '/login/',
+    component: loginPage
+  },
+  {
+    path:'/signup/',
+    component: signupPage
   },
   {
     path: '/about/',

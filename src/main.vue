@@ -45,8 +45,8 @@
 						</f7-list>
 						<f7-block-title>Load page in main view</f7-block-title>
 						<f7-list>
-							<f7-list-item link="/about/" title="About" link-view="#main-view" link-close-panel></f7-list-item>
-							<f7-list-item link="/form/" title="Form" link-view="#main-view" link-close-panel></f7-list-item>
+							<f7-list-item link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item>
+							<f7-list-item link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item>
 						</f7-list>
 					</f7-page>
 				</f7-pages>
@@ -68,7 +68,12 @@
 				</f7-navbar>
 				<!-- Pages -->
 				<f7-pages>
+					
 					<products-list></products-list>
+
+					<!-- <div  style="position: absolute;top: 50px;">You are here</div> -->
+					<div style="position: absolute;top: 50px; color:red;">here ={{this.$store.state.user}} {{isUserSignedIn}}</div>
+					<div style="position: absolute;top: 80px; color:blue;">{{this.$store.state.loadedProducts}}</div>
 					<!-- <f7-page>
 						<f7-block-title>Welcome to my App</f7-block-title>
 						<f7-block inner>
@@ -147,6 +152,11 @@ import products from "./pages/products.vue"
   },
   components:{
 	  "products-list": products
+  },
+  computed:{
+	  isUserSignedIn(){
+		  return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+	  }
   }
 };
 </script>

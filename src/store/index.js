@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import * as firebase from 'firebase'
 
 Vue.use(Vuex)
 
@@ -22,16 +22,31 @@ export const store = new Vuex.Store({
                 intensity:"9/13"
             }
         ],
-        user:{
-            id: "aaaaaakkkdfkdkd",
-            favoriteProducts:["2"]
-        }
+        user:null
     },
     mutations:{
-
+        setUser (state,payload){
+            state.user = payload
+        }
     },
     actions:{
-       
+        signUserUp({commit},payload){
+            firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
+                .then(
+                    user =>{
+                        const newUser ={
+                            id: user.uid,
+                            favoriteProducts:[]
+                        }
+                        commit("setUser",newUser)
+                    }
+                )
+                .catch(
+                    error => {
+                        console.log(error)
+                    }
+                )
+        }
     },
     getters:{
         loadedProducts(state){
@@ -43,6 +58,9 @@ export const store = new Vuex.Store({
                     return product.id === productId
             })
             }
+        },
+        user(state){
+           return state.user
         }
     }
 })
