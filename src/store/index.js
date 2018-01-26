@@ -48,15 +48,24 @@ export const store = new Vuex.Store({
         signUserUp({commit},payload){
             commit('setLoading', true)
             commit('clearError')
-            firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-            
-                .then(
+
+            firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password).then(
                     user =>{
                         commit('setLoading', false)
                         const newUser ={
                             id: user.uid,
+                            name: payload.name,
+                            email: payload.email,
                             favoriteProducts:[]
                         }
+                        
+                        firebase.database().ref('users').push(newUser).then(
+                            
+                        ).catch(
+                            error =>{
+                                console.log(error)
+                            }
+                        )
                         commit("setUser",newUser)
                     }
                 )
@@ -79,23 +88,41 @@ export const store = new Vuex.Store({
                         id: user.uid,
                         favoriteProducts:[]
                     }
-                    firebase.database().ref('admins').once('value')
-                    .then((data)=>{
-                        const obj = data.val()
-                        for(let key in obj){
-                            if (key === user.uid){
-                                console.log(obj[key].isAdmin)
-                                commit("setAdmin",true)
-                            }else{
-                                commit("setAdmin",false)
-                            }
+                    // firebase.database().ref('admins').once('value')
+                    // .then((data)=>{
+                    //     const obj = data.val()
+                    //     for(let key in obj){
+                    //         if (key === user.uid){
+                    //             console.log(obj[key].isAdmin)
+                    //             commit("setAdmin",true)
+                    //         }else{
+                    //             commit("setAdmin",false)
+                    //         }
                             
+                    //     }
+                        firebase.database().ref('users').once('value').then(
+                            (data)=>{
+                                const obj = data.val()
+                                for(let key in obj){
+                                    if (obj[key].id === user.uid){
+                                        if(obj[key].isAdmin === true){
+                                            commit("setAdmin",true) 
+                                        }else{
+                                            commit("setAdmin",false)
+                                        }
+                                    const newUser ={
+                                            id: obj[key].id,
+                                            name: obj[key].name,
+                                            email: obj[key].email
+                                        }
+                                        commit("setUser",newUser)
+                                    }
+                            }
                         }
-                        commit("setUser",newUser)
-                    })
-                   
-                }
+                    
             )
+        }
+    )
                 .catch(
                     error => {
                         commit('setLoading', false)

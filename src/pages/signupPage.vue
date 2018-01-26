@@ -7,8 +7,11 @@
 		<f7-list style="list-style: none;">
 			<form id="form" @submit.prevent="onSignUp">
 							<f7-list-item>
-
-								<f7-label>Email1 </f7-label>
+								<f7-label>Username</f7-label>
+									<f7-input required name="username" placeholder="Username" type="text" id="username" v-model="name"></f7-input>
+							</f7-list-item>
+							<f7-list-item>
+								<f7-label>Email</f7-label>
 									<f7-input required name="email" placeholder="Email" type="email" id="email" v-model="email"></f7-input>
 							</f7-list-item>
 							<f7-list-item>
@@ -17,11 +20,7 @@
 							</f7-list-item>
               <f7-list-item>
 								<f7-label>Confirm Password</f7-label>
-									<f7-input required name="confirmPassword" placeholder="Confirm Password" type="password" id="confirmPassword" v-model="confirmPassword"></f7-input>
-              </f7-list-item>
-							 <f7-list-item>
-							<f7-label>role</f7-label>
-									<f7-input required name="role" placeholder="role" type="text" id="role" v-model="role"></f7-input>
+									<f7-input name="confirmPassword" placeholder="Confirm Password" type="password" id="confirmPassword" v-model="confirmPassword"></f7-input>
               </f7-list-item>
 							<p v-if="error">{{error.message}}</p>
            	<button class="button" style="margin: 29px auto;width: 200px;" type="submit">SignUp</button>
@@ -36,9 +35,9 @@ import { productsRef } from "../config/firebase";
 export default {
   data() {
     return {
+			name: '',
       email:'',
 			password:'',
-			role:'',
 			confirmPassword:''
     };
   },
@@ -66,7 +65,7 @@ export default {
 	},
   methods:{
     onSignUp(){
-			this.$store.dispatch('signUserUp', {email: this.email, password: this.password, role: this.role})
+			this.$store.dispatch('signUserUp', {email: this.email, password: this.password, name: this.name})
     }
   }
 };

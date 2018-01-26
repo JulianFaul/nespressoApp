@@ -47,7 +47,8 @@
 						<f7-list>
 							<f7-list-item v-if="!isUserSignedIn" link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item>
 							<f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item>
-								<f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item>
+							<f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item>
+							<f7-list-item v-if="isAdmin" link="/admin/" title="Admin" link-view="#main-view" link-close-panel></f7-list-item>
 						</f7-list>
 					</f7-page>
 				</f7-pages>
@@ -75,7 +76,8 @@
 		<div style="background: rgba(202, 202, 202, 0.44);width: 100%;height: 100%;position: absolute;margin: 0 auto;top: 0px;left: 0px;">
       		<div class="preloader color-black" style="width: 50px;height: 50px;top: 50%;position: absolute;left: 0;right: 0;margin: 0 auto;"></div>
 		</div>
-	</div> --><div style="position:absolute;top:50px;font-size:40px; z-index:20000;">{{this.$store.state.isAdmin}}</div>
+	</div> -->
+	<!-- <div style="position:absolute;top:50px;font-size:40px; z-index:20000;">{{isAdmin}}</div> -->
 					<products-list></products-list>
 				</f7-page>	
 					<!-- <div  style="position: absolute;top: 50px;">You are here</div> -->
@@ -164,6 +166,9 @@ import products from "./pages/products.vue"
 		},
 	  isUserSignedIn(){
 		  return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+	  },
+	  isAdmin(){
+		  return this.$store.getters.isAdmin
 	  }
   }
 };
