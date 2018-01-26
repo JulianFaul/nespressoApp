@@ -2,7 +2,9 @@
 import productDetails from "./pages/productDetails"
 import loginPage from "./pages/loginPage"
 import signupPage from "./pages/signupPage"
+import profilePage from "./pages/profilePage"
 import homePage from "./main"
+
 
 export default [
   {
@@ -20,6 +22,10 @@ export default [
   {
     path:'/signup/',
     component: signupPage
+  },
+  {
+    path:'/profile/',
+    component: profilePage
   },
   {
     path: '/about/',

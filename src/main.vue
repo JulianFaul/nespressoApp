@@ -75,7 +75,7 @@
 		<div style="background: rgba(202, 202, 202, 0.44);width: 100%;height: 100%;position: absolute;margin: 0 auto;top: 0px;left: 0px;">
       		<div class="preloader color-black" style="width: 50px;height: 50px;top: 50%;position: absolute;left: 0;right: 0;margin: 0 auto;"></div>
 		</div>
-	</div> -->
+	</div> --><div style="position:absolute;top:50px;font-size:40px; z-index:20000;">{{this.$store.state.isAdmin}}</div>
 					<products-list></products-list>
 				</f7-page>	
 					<!-- <div  style="position: absolute;top: 50px;">You are here</div> -->

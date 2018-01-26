@@ -24,7 +24,8 @@ export const store = new Vuex.Store({
         ],
         user:null,
         loading:false,
-        error: null
+        error: null,
+        isAdmin:false
     },
     mutations:{
         setUser (state,payload){
@@ -38,6 +39,9 @@ export const store = new Vuex.Store({
         },
         clearError(state){
             state.error = null
+        },
+        setAdmin(state,payload){
+            state.isAdmin = payload
         }
     },
     actions:{
@@ -45,6 +49,7 @@ export const store = new Vuex.Store({
             commit('setLoading', true)
             commit('clearError')
             firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
+            
                 .then(
                     user =>{
                         commit('setLoading', false)
@@ -64,7 +69,7 @@ export const store = new Vuex.Store({
                 )
         },
         logUserIn({commit},payload){
-            
+            // this.$store.getters.user !== null && this.$store.getters.user !== undefined
             commit('setLoading', true)
             commit('clearError')
             firebase.auth().signInWithEmailAndPassword(payload.email,payload.password)
@@ -74,7 +79,21 @@ export const store = new Vuex.Store({
                         id: user.uid,
                         favoriteProducts:[]
                     }
-                    commit("setUser",newUser)
+                    firebase.database().ref('admins').once('value')
+                    .then((data)=>{
+                        const obj = data.val()
+                        for(let key in obj){
+                            if (key === user.uid){
+                                console.log(obj[key].isAdmin)
+                                commit("setAdmin",true)
+                            }else{
+                                commit("setAdmin",false)
+                            }
+                            
+                        }
+                        commit("setUser",newUser)
+                    })
+                   
                 }
             )
                 .catch(
@@ -105,6 +124,9 @@ export const store = new Vuex.Store({
         },
         error(state){
             return state.error
+        },
+        isAdmin(state){
+            return state.isAdmin
         }
     }
 })
