@@ -1,6 +1,6 @@
 // Import Vue
 import Vue from 'vue'
-
+import * as firebase from 'firebase'
 // Import F7
 import Framework7 from 'framework7'
 
@@ -50,5 +50,13 @@ new Vue({
   // Register App Component
   components: {
     app: App
+  },
+  created(){
+    firebase.auth().onAuthStateChanged((user)=>{
+      if(user){
+        this.$store.dispatch('autoSignIn',user)
+      }
+    })
+    this.$store.dispatch('loadProducts')
   }
 })

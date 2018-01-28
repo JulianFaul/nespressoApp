@@ -37,6 +37,7 @@
 					<f7-page>
 						<f7-block>
 							<p>Right panel content goes here</p>
+							<p>{{this.$store.state.user}}</p>
 						</f7-block>
 						<f7-block-title>Load page in panel</f7-block-title>
 						<f7-list>
@@ -48,7 +49,9 @@
 							<f7-list-item v-if="!isUserSignedIn" link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item>
 							<f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item>
 							<f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item>
-							<f7-list-item v-if="isAdmin" link="/admin/" title="Admin" link-view="#main-view" link-close-panel></f7-list-item>
+							<f7-list-item v-if="isAdmin && isUserSignedIn" link="/admin/" title="Admin" link-view="#main-view" link-close-panel></f7-list-item>
+						
+							 <button  v-if="isUserSignedIn" @click="onLogout" class="button" style="margin: 29px auto;width: 200px;" link-close-panel type="submit">Logout</button>
 						</f7-list>
 					</f7-page>
 				</f7-pages>
@@ -72,11 +75,11 @@
 				<!-- Pages -->
 				<f7-pages>
 					<f7-page name="home-page">
-						<!-- <div v-if="loading">
+						<div v-if="loading">
 		<div style="background: rgba(202, 202, 202, 0.44);width: 100%;height: 100%;position: absolute;margin: 0 auto;top: 0px;left: 0px;">
       		<div class="preloader color-black" style="width: 50px;height: 50px;top: 50%;position: absolute;left: 0;right: 0;margin: 0 auto;"></div>
 		</div>
-	</div> -->
+	</div>
 	<!-- <div style="position:absolute;top:50px;font-size:40px; z-index:20000;">{{isAdmin}}</div> -->
 					<products-list></products-list>
 				</f7-page>	
@@ -169,6 +172,11 @@ import products from "./pages/products.vue"
 	  },
 	  isAdmin(){
 		  return this.$store.getters.isAdmin
+	  }
+  },
+  methods:{
+	  onLogout(){
+		  this.$store.dispatch('logout')
 	  }
   }
 };

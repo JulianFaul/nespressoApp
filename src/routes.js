@@ -3,6 +3,12 @@ import productDetails from "./pages/productDetails"
 import loginPage from "./pages/loginPage"
 import signupPage from "./pages/signupPage"
 import profilePage from "./pages/profilePage"
+import adminPage from "./pages/adminPage"
+import viewEditProduct from "./pages/viewEditProduct"
+import editProduct from "./pages/editProduct"
+import newProduct from "./pages/newProduct"
+
+
 import homePage from "./main"
 
 
@@ -13,7 +19,21 @@ export default [
   },
   {
     path: 'productdetails/:productId',
-    component: productDetails
+    component: productDetails,
+    prop:true
+  },
+  {
+    path: 'viewEditProduct/:productId',
+    component: viewEditProduct
+  },
+  {
+    path: '/newProduct/',
+    component: newProduct
+  },
+  {
+    path: 'editProduct/:productId',
+    component: editProduct,
+    props: true
   },
   {
     path: '/login/',
@@ -22,6 +42,10 @@ export default [
   {
     path:'/signup/',
     component: signupPage
+  },
+  {
+    path:'/admin/',
+    component: adminPage
   },
   {
     path:'/profile/',

@@ -1,12 +1,11 @@
 <template>
-	<f7-page style="background-color:#ffffff;">
+	<f7-page  style="background-color:#ffffff;">
 
-		<div style="margin: 40px auto;padding: 10px;max-width: 500px;">
+		<div  style="margin: 40px auto;padding: 10px;max-width: 500px;">
 			<f7-login-screen-title>Login</f7-login-screen-title>
 		<f7-list style="list-style: none;">
 			<form id="form" @submit.prevent="onSignIn">
 							<f7-list-item>
-
 								<f7-label>Email</f7-label>
 									<f7-input required name="email" placeholder="Email" type="email" id="email" v-model="email"></f7-input>
 							</f7-list-item>
@@ -32,12 +31,15 @@ export default {
   computed:{
 		user(){
 			return this.$store.getters.user
+		},
+		loading(){
+			return this.$store.getters.loading
 		}
 	},
 	watch:{
 		user(value){
 			if(value !== null && value !== undefined){
-				this.$f7.getCurrentView().router.back({pageName:'home-page',animatePages: false})
+				this.$f7.getCurrentView().router.loadPage({pageName:'home-page',animatePages: false})
 			}
 		}
 	},
