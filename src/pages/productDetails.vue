@@ -10,11 +10,14 @@
 			<p>{{product.productDescription}}</p>
 			<p>{{product.itemDescription}}</p>
 			<p>R {{product.price}}</p>
-			
+			<p>{{product.id}}</p>
             <div class="card-footer">
 							<div v-if="isUserSignedIn">
-                <button v-if="!userLiked" @click="likeProduct" class="button"  type="submit">Like</button>
-								<button v-else @click="unlikeProduct" class="button"  type="submit">Unlike</button>
+	
+									<button @click="action" class="button"  type="submit">{{ userLiked ? 'Unregister' : 'Register' }}</button>
+							
+                <!-- <button v-if="!userLiked" @click="likeProduct" class="button"  type="submit">Like</button>
+								<button v-else @click="unlikeProduct" class="button"  type="submit">Unlike</button> -->
                 <!-- <a href="#" class="link">Comment</a> -->
                
 								</div>
@@ -31,10 +34,15 @@ import {productsRef} from '../config/firebase'
 export default {
   data() {
     return {
-		
+
 		};
     },
-  props:['productId'],
+	props:['productId'],
+	watch:{
+		userLiked: function(val){
+			console.log("value changed")
+		}
+	},
   computed:{
 		product(){
 			return this.$store.getters.loadedProduct(this.productId)
@@ -51,6 +59,16 @@ export default {
 		}
 	},
 	methods:{
+		action(){
+		this.$f7.getCurrentView().router.refreshPage({reload:true})
+			if (this.userLiked) {
+					this.$store.dispatch('unfavorateProduct', this.productId)
+				
+        } else {
+					this.$store.dispatch('favoriteProduct', this.productId)
+				
+        }
+		},
 		likeProduct(){
 			console.log(this.productId)
 			this.$store.dispatch('favoriteProduct',this.productId)

@@ -19,8 +19,8 @@ export default [
   },
   {
     path: 'productdetails/:productId',
-    component: productDetails,
-    prop:true
+    component: productDetails
+    
   },
   {
     path: 'viewEditProduct/:productId',
