@@ -12,11 +12,13 @@
 			<p>R {{product.price}}</p>
 			
             <div class="card-footer">
-							{{userLiked}}{{this.productId}}
+							<div v-if="isUserSignedIn">
                 <button v-if="!userLiked" @click="likeProduct" class="button"  type="submit">Like</button>
 								<button v-else @click="unlikeProduct" class="button"  type="submit">Unlike</button>
-                <a href="#" class="link">Comment</a>
-                <a href="#" class="link">Share</a>
+                <!-- <a href="#" class="link">Comment</a> -->
+               
+								</div>
+								 <a href="#" class="link">Share</a>
             </div>
 		</f7-block>
 	</f7-page>
@@ -37,19 +39,25 @@ export default {
 		product(){
 			return this.$store.getters.loadedProduct(this.productId)
 		},
+		isUserSignedIn(){
+		  return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+	  },
 		userLiked(){
-			return this.$store.getters.user.favoriteProducts.findIndex(productId => {
+			if(this.$store.getters.user){
+				return this.$store.getters.user.favoriteProducts.findIndex(productId => {
 				return productId === this.productId
 			}) >= 0
+			}
 		}
 	},
 	methods:{
 		likeProduct(){
-			console.log()
-			this.$store.dispatch('favoriteProduct',{id:this.productId})
+			console.log(this.productId)
+			this.$store.dispatch('favoriteProduct',this.productId)
 		},
-		unlikeProduct(productId){
-			this.$store.dispatch('unfavorateProduct',{ id:this.productId})
+		unlikeProduct(){
+			console.log(this.productId)
+			this.$store.dispatch('unfavorateProduct',this.productId)
 		}
 			
 	}

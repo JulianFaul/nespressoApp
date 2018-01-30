@@ -6,7 +6,7 @@
 		<f7-statusbar></f7-statusbar>
 		
 		<!-- Left Panel -->
-		<f7-panel left reveal layout="dark">
+		<!-- <f7-panel left reveal layout="dark">
 			<f7-view id="left-panel-view" navbar-through :dynamic-navbar="true">
 				<f7-navbar title="Left Panel"></f7-navbar>
 				<f7-pages>
@@ -27,7 +27,7 @@
 					</f7-page>
 				</f7-pages>
 			</f7-view>
-		</f7-panel>
+		</f7-panel> -->
 		
 		<!-- Right Panel -->
 		<f7-panel right cover layout="dark">
@@ -46,6 +46,7 @@
 						</f7-list>
 						<f7-block-title>Load page in main view</f7-block-title>
 						<f7-list>
+							{{isAdmin}}
 							<f7-list-item v-if="!isUserSignedIn" link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item>
 							<f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item>
 							<f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item>
@@ -80,44 +81,8 @@
       		<div class="preloader color-black" style="width: 50px;height: 50px;top: 50%;position: absolute;left: 0;right: 0;margin: 0 auto;"></div>
 		</div>
 	</div>
-	<!-- <div style="position:absolute;top:50px;font-size:40px; z-index:20000;">{{isAdmin}}</div> -->
-					<products-list></products-list>
-				</f7-page>	
-					<!-- <div  style="position: absolute;top: 50px;">You are here</div> -->
-					<!-- <f7-page>
-						<f7-block-title>Welcome to my App</f7-block-title>
-						<f7-block inner>
-							<p>Duis sed erat ac eros ultrices pharetra id ut tellus. Praesent rhoncus enim ornare ipsum aliquet ultricies. Pellentesque sodales erat quis elementum sagittis.</p>
-						</f7-block>
-						<f7-block-title>Navigation</f7-block-title>
-						<f7-list>
-							<f7-list-item link="/about/" title="About"></f7-list-item>
-							<f7-list-item link="/form/" title="Form"></f7-list-item>
-							<f7-list-item link="/dynamic-route/blog/45/post/125/?foo=bar#about" title="Dynamic Route"></f7-list-item>
-						</f7-list>
-						<f7-block-title>Side Panels</f7-block-title>
-						<f7-block>
-							<f7-grid>
-								<f7-col width="50">
-									<f7-button open-panel="left">Left Panel</f7-button>
-								</f7-col>
-								<f7-col width="50">
-									<f7-button open-panel="right">Right Panel</f7-button>
-								</f7-col>
-							</f7-grid>
-						</f7-block>
-						<f7-block-title>Modals</f7-block-title>
-						<f7-block>
-							<f7-grid>
-								<f7-col width="50">
-									<f7-button open-popup="#popup">Popup</f7-button>
-								</f7-col>
-								<f7-col width="50">
-									<f7-button open-login-screen="#login-screen">Login Screen</f7-button>
-								</f7-col>
-							</f7-grid>
-						</f7-block>
-					</f7-page> -->
+						<products-list></products-list>
+					</f7-page>	
 				</f7-pages>
 			</f7-view>
 		</f7-views>
