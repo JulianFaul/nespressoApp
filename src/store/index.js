@@ -243,6 +243,11 @@ export const store = new Vuex.Store({
         },
 
 // ----------------------------------------------------------------------------
+clearUserFavProducts({commit,getters}, payload){
+    let favProductDetails = getters.favProductDetails
+    favProductDetails.splice(favProductDetails.findIndex(favproduct => favproduct.id === payload), 1)
+    commit('setFavProductDetails', favProductDetails)
+},
     fetchUserFavProducts({commit, getters}){
             const userId = getters.user.id
             let favProductDetails = []

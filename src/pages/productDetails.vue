@@ -54,21 +54,13 @@ export default {
 		}
 	},
 	methods:{
-		// action(){
-		// this.$f7.getCurrentView().router.refreshPage({reload:true})
-		// 	if (this.userLiked) {
-		// 			this.$store.dispatch('unfavorateProduct', this.productId)
-				
-    //     } else {
-		// 			this.$store.dispatch('favoriteProduct', this.productId)
-				
-    //     }
-		// },
 		likeProduct(productId){
 			this.$store.dispatch('favoriteProduct',productId)
+			this.$store.dispatch('fetchUserFavProducts')
 		},
 		unlikeProduct(productId){
 			this.$store.dispatch('unfavorateProduct',productId)
+			this.$store.dispatch('clearUserFavProducts',productId)
 		}
 			
 	}

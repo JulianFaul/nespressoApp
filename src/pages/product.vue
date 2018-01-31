@@ -50,7 +50,7 @@ props:['productId','product'],
 		},
 		unlikeProduct(productId){
 			this.$store.dispatch('unfavorateProduct',productId)
-			this.$store.dispatch('fetchUserFavProducts')
+			this.$store.dispatch('clearUserFavProducts',productId)
 		}
 	}
 };
