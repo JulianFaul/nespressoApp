@@ -35,18 +35,8 @@
 				<f7-navbar title="Right Panel" sliding></f7-navbar>
 				<f7-pages>
 					<f7-page>
-						<f7-block>
-							<p>Right panel content goes here</p>
-							<p>{{this.$store.state.user}}</p>
-						</f7-block>
-						<f7-block-title>Load page in panel</f7-block-title>
+						<f7-block-title></f7-block-title>
 						<f7-list>
-							<f7-list-item link="/about/" title="About"></f7-list-item>
-							<f7-list-item link="/form/" title="Form"></f7-list-item>
-						</f7-list>
-						<f7-block-title>Load page in main view</f7-block-title>
-						<f7-list>
-							{{isAdmin}}
 							<f7-list-item v-if="!isUserSignedIn" link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item>
 							<f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item>
 							<f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item>

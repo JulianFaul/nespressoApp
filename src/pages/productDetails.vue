@@ -10,14 +10,13 @@
 			<p>{{product.productDescription}}</p>
 			<p>{{product.itemDescription}}</p>
 			<p>R {{product.price}}</p>
-			<p>{{product.id}}</p>
             <div class="card-footer">
 							<div v-if="isUserSignedIn">
 	
-									<button @click="action" class="button"  type="submit">{{ userLiked ? 'Unregister' : 'Register' }}</button>
+									<!-- <button @click="action" class="button"  type="submit">{{ userLiked ? 'Unregister' : 'Register' }}</button> -->
 							
-                <!-- <button v-if="!userLiked" @click="likeProduct" class="button"  type="submit">Like</button>
-								<button v-else @click="unlikeProduct" class="button"  type="submit">Unlike</button> -->
+                <button v-if="!userLiked" @click="likeProduct(product.id)" class="button"  type="submit">Like</button>
+								<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
                 <!-- <a href="#" class="link">Comment</a> -->
                
 								</div>
@@ -38,11 +37,7 @@ export default {
 		};
     },
 	props:['productId'],
-	watch:{
-		userLiked: function(val){
-			console.log("value changed")
-		}
-	},
+
   computed:{
 		product(){
 			return this.$store.getters.loadedProduct(this.productId)
@@ -59,23 +54,21 @@ export default {
 		}
 	},
 	methods:{
-		action(){
-		this.$f7.getCurrentView().router.refreshPage({reload:true})
-			if (this.userLiked) {
-					this.$store.dispatch('unfavorateProduct', this.productId)
+		// action(){
+		// this.$f7.getCurrentView().router.refreshPage({reload:true})
+		// 	if (this.userLiked) {
+		// 			this.$store.dispatch('unfavorateProduct', this.productId)
 				
-        } else {
-					this.$store.dispatch('favoriteProduct', this.productId)
+    //     } else {
+		// 			this.$store.dispatch('favoriteProduct', this.productId)
 				
-        }
+    //     }
+		// },
+		likeProduct(productId){
+			this.$store.dispatch('favoriteProduct',productId)
 		},
-		likeProduct(){
-			console.log(this.productId)
-			this.$store.dispatch('favoriteProduct',this.productId)
-		},
-		unlikeProduct(){
-			console.log(this.productId)
-			this.$store.dispatch('unfavorateProduct',this.productId)
+		unlikeProduct(productId){
+			this.$store.dispatch('unfavorateProduct',productId)
 		}
 			
 	}

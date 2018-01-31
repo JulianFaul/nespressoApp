@@ -41,11 +41,6 @@ export default {
 			return this.$store.getters.loading
 		}
 	},
-	methods:{
-		likeProduct(productId){
-			this.$store.dispatch('favoriteProduct',productId)
-		}
-		},
 		components:{
 			"product": product
 		}

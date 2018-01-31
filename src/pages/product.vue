@@ -8,8 +8,10 @@
 					</f7-link>
 						<f7-card-footer>
 							<span>{{product.name}}</span>
-							<span>{{product.id}}</span>
-                            {{userLiked}}
+						<div v-if="isUserSignedIn">
+						    <button v-if="!userLiked" @click="likeProduct(product.id)" class="button"  type="submit">Like</button>
+							<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
+						</div>
 						</f7-card-footer>
 				</f7-card>
 			</f7-col>
@@ -30,15 +32,27 @@ props:['productId','product'],
 	},
     computed:{
     userLiked(){
-
 			if(this.$store.getters.user){
 				return this.$store.getters.user.favoriteProducts.findIndex(productId => {
 				return productId === this.productId
 			}) >= 0
 			}
           
-    }
-    }
+	},
+	isUserSignedIn(){
+		  return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+	  },
+	},
+	methods:{
+		likeProduct(productId){
+			this.$store.dispatch('favoriteProduct',productId)
+			this.$store.dispatch('fetchUserFavProducts')
+		},
+		unlikeProduct(productId){
+			this.$store.dispatch('unfavorateProduct',productId)
+			this.$store.dispatch('fetchUserFavProducts')
+		}
+	}
 };
 </script>
 

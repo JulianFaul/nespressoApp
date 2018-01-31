@@ -8,6 +8,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
     state: {
         loadedProducts: [],
+        favProductDetails:[],
         user: null,
         loading: false,
         error: null,
@@ -26,7 +27,13 @@ export const store = new Vuex.Store({
 // ----------------------------------------------------------------------------
         unfavorateProduct(state, payload) {
             const favoriteProducts = state.user.favoriteProducts
-            favoriteProducts.splice(favoriteProducts.findIndex(product => product.id === payload), 1)
+            console.log("state.user.favoriteProducts = " + state.user.favoriteProducts)
+            console.log("unfava prod = " + payload)
+            for (var i = 0; i < favoriteProducts.length; i++)
+            if (favoriteProducts[i] === payload) {
+             favoriteProducts.splice(i, 1)
+                break;
+            }
             Reflect.deleteProperty(state.user.fbKeys, payload)
         },
 // ----------------------------------------------------------------------------
@@ -57,6 +64,10 @@ export const store = new Vuex.Store({
         setLoadedProducts(state, payload) {
             state.loadedProducts = payload
         },
+
+        setFavProductDetails(state,payload){
+            state.favProductDetails = payload
+        },
         
         updateProduct(state, payload) {
             const product = state.loadedProducts.find(product => {
@@ -75,7 +86,6 @@ export const store = new Vuex.Store({
     actions: {
         favoriteProduct({ commit, getters }, payload) {
             const user = getters.user
-            console.log('payload action = ' + payload)
             firebase.database().ref('/users/' + user.id).child('/favorateProducts/')
                 .push(payload)
                 .then(data => {
@@ -108,12 +118,12 @@ export const store = new Vuex.Store({
             commit('setUser', null)
         },
 // ----------------------------------------------------------------------------
-        autoSignIn({ commit }, payload) {
+        autoSignIn({ commit, getters }, payload) {
             firebase.database().ref('users').once('value').then(
                 (data) => {
                     const obj = data.val()
                     for (let key in obj) {
-                        if (obj[key].id === payload.uid) {
+                        if(key === getters.user.id){
                             if (obj[key].isAdmin === true) {
                                 commit("setAdmin", true)
                             } else {
@@ -231,6 +241,53 @@ export const store = new Vuex.Store({
                     console.log(error)
                 })
         },
+
+// ----------------------------------------------------------------------------
+    fetchUserFavProducts({commit, getters}){
+            const userId = getters.user.id
+            let favProductDetails = []
+            let favProductIds = []
+            firebase.database().ref('/users/' + userId + '/favorateProducts/').once('value')
+            .then(data=>{
+                const values = data.val()
+                for(let key in values){
+                    favProductIds.push(values[key])
+                }
+                for(let favProductId in favProductIds){
+                    firebase.database().ref('/products/' + favProductIds[favProductId]).once('value')
+                    .then(data=>{
+                        favProductDetails.push({
+                            id:favProductIds[favProductId],
+                            name: data.val().name,
+                            productDescription: data.val().productDescription,
+                            itemDescription: data.val().itemDescription,
+                            intensity: data.val().intensity,
+                            imageUrl: data.val().imageUrl,
+                            price: data.val().price
+                        })
+                    })
+                }
+                commit('setFavProductDetails', favProductDetails)
+            })
+        },
+
+
+             // firebase.database().ref('/products/' + favProductId).once('value')
+                    // .then(data=>{
+                    //     const obj = data.val()
+                    //     for (let key in obj) {
+                    //         favProductDetails.push({
+                    //             // id: key,
+                    //             name: obj.name,
+                    //             productDescription: obj.productDescription,
+                    //             itemDescription: obj.itemDescription,
+                    //             intensity: obj.intensity,
+                    //             imageUrl: obj.imageUrl,
+                    //             price: obj.price
+                    //         })
+                    //     }
+                       
+                    // })
 // ----------------------------------------------------------------------------
         fetchUserData({commit, getters}, payload){
             commit('setLoading', true)
@@ -243,7 +300,6 @@ export const store = new Vuex.Store({
                     for(let key in values.favorateProducts){
                         favoriteProducts.push(values.favorateProducts[key])
                         swappedPairs[values.favorateProducts[key]] = key
-                        
                     }
                     const updatedUser = {
                         id : getters.user.id,
@@ -252,7 +308,6 @@ export const store = new Vuex.Store({
                         name: values.name,
                         email: values.email
                     }
-                    console.log(updatedUser)
                     commit('setLoading', false)
                     commit('setUser', updatedUser)
             })
@@ -275,26 +330,25 @@ export const store = new Vuex.Store({
                         fbKeys: {},
                         favoriteProducts: []
                     }
-                    // firebase.database().ref('/users/').once('value').then(
-                    //     (data) => {
-                    //         console.log(data.val())
-                    //         const obj = data.val()
-                    //         for (let key in obj) {
+                    firebase.database().ref('/users/').once('value').then(
+                        (data) => {
+                            const obj = data.val()
+                            for (let key in obj) {
+                                if(key === user.uid){
+                                if (obj[key].isAdmin === true) {
+                                    commit("setAdmin", true)
+                                } else {
+                                    commit("setAdmin", false)
+                                }
+                            }
+                                commit("setUser", newUser)
                                 
-                    //             if (obj[key].isAdmin === true) {
-                    //                 // console.log('Found admin here')
-                    //                 // commit("setAdmin", true)
-                    //             } else {
-                    //                 // console.log('NO admin here')
-                    //                 // commit("setAdmin", false)
-                    //             }
-                            
-                    //             commit("setUser", newUser)
-                                
-                    //         }
-                    //     }
-                    }
+                            }
+                        }
+                    
                 )
+            }
+        )
                 .catch(
                 error => {
                     commit('setLoading', false)
@@ -310,6 +364,9 @@ export const store = new Vuex.Store({
     getters: {
         loadedProducts(state) {
             return state.loadedProducts
+        },
+        favProductDetails(state) {
+            return state.favProductDetails
         },
         loadedProduct(state) {
             return (productId) => {
