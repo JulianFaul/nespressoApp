@@ -313,6 +313,7 @@ clearUserFavProducts({commit,getters}, payload){
                         name: values.name,
                         email: values.email
                     }
+                    console.log(updatedUser)
                     commit('setLoading', false)
                     commit('setUser', updatedUser)
             })
@@ -346,12 +347,9 @@ clearUserFavProducts({commit,getters}, payload){
                                     commit("setAdmin", false)
                                 }
                             }
-                                commit("setUser", newUser)
-                                
                             }
-                        }
-                    
-                )
+                        })
+                        commit("setUser", newUser)
             }
         )
                 .catch(

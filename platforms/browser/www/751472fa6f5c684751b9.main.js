@@ -57291,6 +57291,11 @@ const store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
         },
 
 // ----------------------------------------------------------------------------
+clearUserFavProducts({commit,getters}, payload){
+    let favProductDetails = getters.favProductDetails
+    favProductDetails.splice(favProductDetails.findIndex(favproduct => favproduct.id === payload), 1)
+    commit('setFavProductDetails', favProductDetails)
+},
     fetchUserFavProducts({commit, getters}){
             const userId = getters.user.id
             let favProductDetails = []
@@ -57356,6 +57361,7 @@ const store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                         name: values.name,
                         email: values.email
                     }
+                    console.log(updatedUser)
                     commit('setLoading', false)
                     commit('setUser', updatedUser)
             })
@@ -57389,12 +57395,9 @@ const store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                                     commit("setAdmin", false)
                                 }
                             }
-                                commit("setUser", newUser)
-                                
                             }
-                        }
-                    
-                )
+                        })
+                        commit("setUser", newUser)
             }
         )
                 .catch(
@@ -59434,21 +59437,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		}
 	},
 	methods:{
-		// action(){
-		// this.$f7.getCurrentView().router.refreshPage({reload:true})
-		// 	if (this.userLiked) {
-		// 			this.$store.dispatch('unfavorateProduct', this.productId)
-				
-    //     } else {
-		// 			this.$store.dispatch('favoriteProduct', this.productId)
-				
-    //     }
-		// },
 		likeProduct(productId){
 			this.$store.dispatch('favoriteProduct',productId)
+			this.$store.dispatch('fetchUserFavProducts')
 		},
 		unlikeProduct(productId){
 			this.$store.dispatch('unfavorateProduct',productId)
+			this.$store.dispatch('clearUserFavProducts',productId)
 		}
 			
 	}
@@ -62803,7 +62798,7 @@ props:['productId','product'],
 		},
 		unlikeProduct(productId){
 			this.$store.dispatch('unfavorateProduct',productId)
-			this.$store.dispatch('fetchUserFavProducts')
+			this.$store.dispatch('clearUserFavProducts',productId)
 		}
 	}
 });

@@ -3,7 +3,7 @@
 	<div id="app">
 		
 		<!-- Statusbar -->
-		<f7-statusbar></f7-statusbar>
+		<!-- <f7-statusbar></f7-statusbar> -->
 		
 		<!-- Left Panel -->
 		<!-- <f7-panel left reveal layout="dark">
@@ -55,14 +55,18 @@
 			<f7-view id="main-view" navbar-through :dynamic-navbar="true" main>
 				<!-- Navbar -->
 				<f7-navbar layout="dark" style="color:#ffffff;">
-					<!-- <f7-nav-left>
-						<f7-link icon="icon-bars white" open-panel="left"></f7-link>
-					</f7-nav-left> -->
 					<f7-nav-center sliding><img style="width:150px;" src="./assets/images/logo.png"/></f7-nav-center>
 					<f7-nav-right>
 						<f7-link icon="icon-bars" open-panel="right"></f7-link>
 					</f7-nav-right>
 				</f7-navbar>
+				 <div class="toolbar toolbar-bottom-md">
+					<div class="toolbar-inner">
+						<a class="link" href="/profile/"><i class="f7-icons size-50">home</i></a>
+						<a class="link">Link 2</a>
+						<a class="link">Link 3</a>
+					</div>
+				</div>
 				<!-- Pages -->
 				<f7-pages>
 					<f7-page name="home-page">
