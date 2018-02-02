@@ -1,9 +1,6 @@
 <template>
     <f7-page style="background-color:#ffffff;">
 				<f7-navbar layout="dark" back-link="Back" sliding style="color:#ffffff;">
-					<!-- <f7-nav-left>
-						<f7-link icon="icon-bars white" open-panel="left"></f7-link>
-					</f7-nav-left> -->
 					<f7-nav-center sliding><img style="width:150px;" src="../assets/images/logo.png"/></f7-nav-center>
 					<f7-nav-right>
 						<f7-link icon="icon-bars" open-panel="right"></f7-link>
@@ -11,13 +8,15 @@
 				</f7-navbar>
 
 				<f7-block>
-          
-        <h1>Favorate Products</h1>
-				<f7-list>     
-					<f7-list-item :link="'/productdetails/' + favorateProduct.id" v-for="favorateProduct in favorateProducts" v-bind:key="favorateProduct['.key']">
-								<span><img style="width:50px; vertical-align:middle;" :src="favorateProduct.imageUrl"> {{favorateProduct.name}}</span>
-					</f7-list-item>
-				</f7-list>
+       
+				<div>
+					<div style="text-align:center; margin-top:60px;">
+					<img style="width:117px;" src="https://www.sonypark360.net/wp-content/uploads/2017/08/profile-pictures.png">
+					</div>
+					<p><b>User name:</b> {{user.name}}</p>
+					<p><b>Email:</b> {{user.email}}</p>
+				</div>
+				 <button  v-if="isUserSignedIn" @click="onLogout" class="button" style="margin: 29px auto;width: 200px;" link-close-panel type="submit">Logout</button>
 	</f7-block>
 
     </f7-page>
@@ -31,17 +30,26 @@ export default {
 		
 		};
 	},
-	created(){
-		return this.$store.getters.favProductDetails
-	},
 	computed:{
 		user(){
 			return this.$store.getters.user
 		},
-		favorateProducts(){
-			return this.$store.getters.favProductDetails
+		isUserSignedIn(){
+		  return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+	  }
+	},
+	watch:{
+		user(value){
+			if(value !== null && value !== undefined){
+				this.$f7.getCurrentView().router.loadPage({pageName:'home-page',animatePages: true})
+			}
 		}
-	}
+	},
+		methods:{
+	  onLogout(){
+		  this.$store.dispatch('logout')
+		}
+	}		
 };
 </script>
 

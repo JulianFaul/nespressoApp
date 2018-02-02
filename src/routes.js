@@ -7,15 +7,15 @@ import adminPage from "./pages/adminPage"
 import viewEditProduct from "./pages/viewEditProduct"
 import editProduct from "./pages/editProduct"
 import newProduct from "./pages/newProduct"
-
-
-import homePage from "./main"
+import favorates from './pages/favorates'
 
 
 export default [
+  
   {
-    path: '/home/',
-    component: homePage
+    path: '/favorates/',
+    component: favorates
+    
   },
   {
     path: 'productdetails/:productId',

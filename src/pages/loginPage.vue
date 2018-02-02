@@ -13,8 +13,11 @@
 								<f7-label>Password</f7-label>
 									<f7-input required name="password" placeholder="Password" type="password" id="password" v-model="password"></f7-input>
 							</f7-list-item>
-           	<button class="button" style="margin: 29px auto;width: 200px;" type="submit">Login</button>
+           	<button class="button" style="margin: 20px auto;width: 200px;" type="submit">Login</button>
 				</form>
+		
+				<a class="button" style="margin: 10px auto;width: 200px;"  href="/signup/">Signup</a>
+				<!-- <f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item> -->
 						</f7-list>
 			</div>
 	</f7-page>

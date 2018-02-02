@@ -30,19 +30,19 @@
 		</f7-panel> -->
 		
 		<!-- Right Panel -->
-		<f7-panel right cover layout="dark">
+		<f7-panel v-if="isAdmin && isUserSignedIn" right cover layout="dark">
 			<f7-view id="right-panel-view" navbar-through :dynamic-navbar="true">
 				<f7-navbar title="Right Panel" sliding></f7-navbar>
 				<f7-pages>
 					<f7-page>
 						<f7-block-title></f7-block-title>
 						<f7-list>
-							<f7-list-item v-if="!isUserSignedIn" link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item>
-							<f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item>
-							<f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item>
+							<!-- <f7-list-item v-if="!isUserSignedIn" link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item> -->
+							<!-- <f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item> -->
+							<!-- <f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item> -->
 							<f7-list-item v-if="isAdmin && isUserSignedIn" link="/admin/" title="Admin" link-view="#main-view" link-close-panel></f7-list-item>
 						
-							 <button  v-if="isUserSignedIn" @click="onLogout" class="button" style="margin: 29px auto;width: 200px;" link-close-panel type="submit">Logout</button>
+							
 						</f7-list>
 					</f7-page>
 				</f7-pages>
@@ -54,17 +54,19 @@
 			
 			<f7-view id="main-view" navbar-through :dynamic-navbar="true" main>
 				<!-- Navbar -->
+		
 				<f7-navbar layout="dark" style="color:#ffffff;">
 					<f7-nav-center sliding><img style="width:150px;" src="./assets/images/logo.png"/></f7-nav-center>
 					<f7-nav-right>
-						<f7-link icon="icon-bars" open-panel="right"></f7-link>
+						<f7-link v-if="isAdmin && isUserSignedIn" icon="icon-bars" open-panel="right"></f7-link>
 					</f7-nav-right>
 				</f7-navbar>
-				 <div class="toolbar toolbar-bottom-md">
+				 <div  class="toolbar layout-dark  toolbar-bottom-md">
 					<div class="toolbar-inner">
-						<a class="link" href="/profile/"><i class="f7-icons size-50">home</i></a>
-						<a class="link">Link 2</a>
-						<a class="link">Link 3</a>
+						<a class="back link" href="#"><i class="f7-icons size-50">home</i></a>
+						<a v-if="isUserSignedIn" class="link" href="/favorates/"><i class="f7-icons size-50">heart</i></a>
+						<a v-if="isUserSignedIn" class="link" href="/profile/"><i class="f7-icons size-50">person</i></a>
+					    <a v-else class="link" href="/login/"><i class="f7-icons size-50">login</i></a>
 					</div>
 				</div>
 				<!-- Pages -->
@@ -132,16 +134,14 @@ import products from "./pages/products.vue"
 	  isAdmin(){
 		  return this.$store.getters.isAdmin
 	  }
-  },
-  methods:{
-	  onLogout(){
-		  this.$store.dispatch('logout')
-	  }
   }
 };
 </script>
 <style>
 .navbar-fixed .page-content, .navbar-through .page-content{
 	padding-top: 10px;
+}
+.f7-icons{
+	color: #ffffff;
 }
 </style>
