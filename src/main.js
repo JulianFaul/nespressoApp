@@ -17,6 +17,8 @@ import Framework7Icons from 'framework7-icons/css/framework7-icons.css'
  import Framework7ThemeColors from 'framework7/dist/css/framework7.material.colors.min.css'
  */
 
+import likePopup from './pages/shared/likePopup.vue'
+Vue.component('likePopup', likePopup)
 // Import App Custom Styles
 import AppStyles from './assets/sass/main.scss'
 

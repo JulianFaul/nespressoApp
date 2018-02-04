@@ -18,17 +18,17 @@ export const store = new Vuex.Store({
     mutations: {
         favoriteProductnow(state, payload) {
             const id = payload.id
+            console.log(id)
             if (state.user.favoriteProducts.findIndex(product => product.id === id) >= 0) {
                 return
             }
             state.user.favoriteProducts.push(id)
             state.user.fbKeys[id] = payload.fbKey
+          
         },
 // ----------------------------------------------------------------------------
         unfavorateProduct(state, payload) {
             const favoriteProducts = state.user.favoriteProducts
-            console.log("state.user.favoriteProducts = " + state.user.favoriteProducts)
-            console.log("unfava prod = " + payload)
             for (var i = 0; i < favoriteProducts.length; i++)
             if (favoriteProducts[i] === payload) {
              favoriteProducts.splice(i, 1)
@@ -86,10 +86,14 @@ export const store = new Vuex.Store({
     actions: {
         favoriteProduct({ commit, getters }, payload) {
             const user = getters.user
+         
             firebase.database().ref('/users/' + user.id).child('/favorateProducts/')
-                .push(payload)
+                .push({
+                    id :payload.productId,
+                    rating: payload.rating
+                })
                 .then(data => {
-                    commit('favoriteProductnow', { id: payload, fbKey: data.key })
+                    commit('favoriteProductnow', { id: payload.productId, fbKey: data.key})
                 })
                 .catch(error => {
                     console.log(error)
@@ -102,7 +106,6 @@ export const store = new Vuex.Store({
                 return
             }
             const fbKey = user.fbKeys[payload]
-
             firebase.database().ref('/users/' + user.id + '/favorateProducts/').child(fbKey)
                 .remove()
                 .then(() => {
@@ -252,17 +255,23 @@ clearUserFavProducts({commit,getters}, payload){
             const userId = getters.user.id
             let favProductDetails = []
             let favProductIds = []
+            let rating = null
             firebase.database().ref('/users/' + userId + '/favorateProducts/').once('value')
             .then(data=>{
                 const values = data.val()
+                
                 for(let key in values){
-                    favProductIds.push(values[key])
+                    favProductIds.push({
+                        id:values[key].id,
+                        rating : values[key].rating
+                    })
                 }
                 for(let favProductId in favProductIds){
-                    firebase.database().ref('/products/' + favProductIds[favProductId]).once('value')
+                    firebase.database().ref('/products/' + favProductIds[favProductId].id).once('value')
                     .then(data=>{
                         favProductDetails.push({
-                            id:favProductIds[favProductId],
+                            rating:favProductIds[favProductId].rating,
+                            id:favProductIds[favProductId].id,
                             name: data.val().name,
                             productDescription: data.val().productDescription,
                             itemDescription: data.val().itemDescription,
@@ -303,8 +312,8 @@ clearUserFavProducts({commit,getters}, payload){
                     let favoriteProducts = []
                     let swappedPairs = {}
                     for(let key in values.favorateProducts){
-                        favoriteProducts.push(values.favorateProducts[key])
-                        swappedPairs[values.favorateProducts[key]] = key
+                        favoriteProducts.push(values.favorateProducts[key].id)
+                        swappedPairs[values.favorateProducts[key].id] = key
                     }
                     const updatedUser = {
                         id : getters.user.id,
@@ -370,6 +379,13 @@ clearUserFavProducts({commit,getters}, payload){
         },
         favProductDetails(state) {
             return state.favProductDetails
+        },
+        favorateProduct(state) {
+            return (productId) => {
+                return state.favProductDetails.find((product) => {
+                    return product.id === productId
+                })
+            }
         },
         loadedProduct(state) {
             return (productId) => {

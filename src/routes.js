@@ -8,7 +8,7 @@ import viewEditProduct from "./pages/viewEditProduct"
 import editProduct from "./pages/editProduct"
 import newProduct from "./pages/newProduct"
 import favorates from './pages/favorates'
-
+import fovorateDetails from './pages/fovorateDetails'
 
 export default [
   
@@ -17,6 +17,12 @@ export default [
     component: favorates
     
   },
+  {
+    path: '/fovorateDetails/:favorateProductId',
+    component: fovorateDetails
+    
+  },
+  
   {
     path: 'productdetails/:productId',
     component: productDetails

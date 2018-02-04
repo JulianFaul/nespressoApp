@@ -1,24 +1,13 @@
 <template>
-
+<div>
 	<f7-block v-if="!loading">
 		<f7-grid v-for="product in products" v-bind:key="product['.key']">
 			<product :product="product" :productId="product.id"></product>
-		<!-- <f7-list-item class="popup-link" >
-			<f7-col>
-				<f7-card>
-					<f7-link :href="'/productdetails/' + product.id">
-					<f7-card-content style="width: 150px;margin: 0 auto;"><img style="width: 100%;" :src="product.imageUrl"></f7-card-content>
-					</f7-link>
-						<f7-card-footer>
-							<span>{{product.name}}</span>
-							<span>{{product.id}}</span>
-						</f7-card-footer>
-				</f7-card>
-			</f7-col>
-			</f7-list-item> -->
+		<likePopup :product="product"></likePopup>
 		</f7-grid>
 	</f7-block>
 
+</div>
 </template>
 
 

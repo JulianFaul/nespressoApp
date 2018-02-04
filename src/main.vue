@@ -83,7 +83,7 @@
 			</f7-view>
 		</f7-views>
 		
-		
+
 		
 		<!-- Login Screen -->
 		<f7-login-screen id="login-screen">

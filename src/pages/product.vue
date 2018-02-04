@@ -1,6 +1,7 @@
 <template>
 
 		<f7-list-item class="popup-link" >
+		
 			<f7-col>
 				<f7-card>
 					<f7-link :href="'/productdetails/' + product.id">
@@ -9,8 +10,8 @@
 						<f7-card-footer>
 							<span>{{product.name}}</span>
 						<div v-if="isUserSignedIn">
-						    <button v-if="!userLiked" @click="likeProduct(product.id)" class="button"  type="submit">Like</button>
-							<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
+			<f7-link v-if="!userLiked" :open-popup="'#popup' + product.id">LIKE</f7-link>
+			<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
 						</div>
 						</f7-card-footer>
 				</f7-card>
@@ -18,12 +19,17 @@
 			</f7-list-item>
 	
 
+
+
 </template>
 
 
 <script>
 
+// <button v-if="!userLiked" @click="likeProduct(product.id)" class="button"  type="submit">Like</button>
+// <button  @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
 export default {
+
 props:['productId','product'],
   data() {
     return {
