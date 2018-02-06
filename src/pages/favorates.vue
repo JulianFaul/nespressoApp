@@ -8,11 +8,9 @@
 				</f7-navbar>
 
 				<f7-block>
-        <h1>Favorate Products</h1>
-				<f7-list>     
-					<f7-list-item  v-for="favorateProduct in favorateProducts" v-bind:key="favorateProduct['.key']">
-							<favorate :favorateProduct="favorateProduct" :favorateProductId="favorateProduct.id"></favorate>
-					</f7-list-item>
+        <h1 style="margin-bottom:0px;">Favorate Products</h1>
+				<f7-list media-list style="margin: 4px 0px;">
+					<favorate v-for="favorateProduct in favorateProducts" v-bind:key="favorateProduct['.key']" :favorateProduct="favorateProduct" :favorateProductId="favorateProduct.id"></favorate>
 				</f7-list>
 	</f7-block>
 

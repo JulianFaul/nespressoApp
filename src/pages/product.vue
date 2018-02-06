@@ -69,4 +69,5 @@ props:['productId','product'],
 	li{
 		list-style-type: none;
 	}
+
 </style>

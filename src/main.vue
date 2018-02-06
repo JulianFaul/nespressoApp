@@ -144,4 +144,17 @@ import products from "./pages/products.vue"
 .f7-icons{
 	color: #ffffff;
 }
+.popup {
+    height: 150px !important;
+    top: 29%;
+    margin: 0 auto;
+    width: 325px;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    border-radius: 20px;
+}
+	.vue-star-rating {
+    margin: 7px auto;
+}
 </style>

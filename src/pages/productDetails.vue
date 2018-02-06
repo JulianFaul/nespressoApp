@@ -10,12 +10,13 @@
 			<p>{{product.productDescription}}</p>
 			<p>{{product.itemDescription}}</p>
 			<p>R {{product.price}}</p>
+
             <div class="card-footer">
 							<div v-if="isUserSignedIn">
 	
 									<!-- <button @click="action" class="button"  type="submit">{{ userLiked ? 'Unregister' : 'Register' }}</button> -->
-							
-                <button v-if="!userLiked" @click="likeProduct(product.id)" class="button"  type="submit">Like</button>
+								<f7-link v-if="!userLiked" :open-popup="'#popup' + product.id">LIKE</f7-link>
+                <!-- <button v-if="!userLiked" @click="likeProduct(product.id)" class="button"  type="submit">Like</button> -->
 								<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
                 <!-- <a href="#" class="link">Comment</a> -->
                
