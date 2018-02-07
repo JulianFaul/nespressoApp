@@ -2,15 +2,13 @@
 
 	<f7-page style="background-color:#ffffff;">
      
-		<f7-navbar title="favDetails" back-link="Back" sliding></f7-navbar>
+		<!-- <f7-navbar title="favDetails" back-link="Back" sliding></f7-navbar> -->
 			<f7-block  style="">
 			<div style="padding-top:20px; width: 250px;margin: 0 auto;"><img :src="favorateProduct.imageUrl"></div>
             
             <star-rating :star-size="20" :rating="favorateProduct.rating" :show-rating="false" @rating-selected ="setRating"></star-rating>
             <small>Intensity: {{favorateProduct.intensity}}</small>
 			<h4>{{favorateProduct.name}}</h4>
-         
-         
 			<p>{{favorateProduct.productDescription}}</p>
 			<p>{{favorateProduct.itemDescription}}</p>
 			<p>R {{favorateProduct.price}}</p>
@@ -56,16 +54,15 @@ export default {
 	},
 	methods:{
         setRating: function(rating){
-      this.rating= rating;
+      		this.rating= rating;
         },
 		likeProduct(productId){
 			this.$store.dispatch('favoriteProduct',productId)
 			this.$store.dispatch('fetchUserFavProducts')
 		},
 		unlikeProduct(productId){
-			this.$store.dispatch('unfavorateProduct',productId)
 			this.$store.dispatch('clearUserFavProducts',productId)
-	
+			this.$store.dispatch('unfavorateProduct',productId)
 		}
 			
 	}

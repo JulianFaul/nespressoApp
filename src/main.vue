@@ -58,12 +58,12 @@
 				<f7-navbar layout="dark" style="color:#ffffff;">
 					<f7-nav-center sliding><img style="width:150px;" src="./assets/images/logo.png"/></f7-nav-center>
 					<f7-nav-right>
-						<f7-link v-if="isAdmin && isUserSignedIn" icon="icon-bars" open-panel="right"></f7-link>
+						<f7-link v-if="isAdmin" icon="icon-bars" open-panel="right"></f7-link>
 					</f7-nav-right>
 				</f7-navbar>
 				 <div  class="toolbar layout-dark  toolbar-bottom-md">
 					<div class="toolbar-inner">
-						<a class="back link" href="#"><i class="f7-icons size-50">home</i></a>
+						<a class="back link" v-on:click.stop.prevent="navigate"><i class="f7-icons size-50">home</i></a>
 						<a v-if="isUserSignedIn" class="link" href="/favorates/"><i class="f7-icons size-50">heart</i></a>
 						<a v-if="isUserSignedIn" class="link" href="/profile/"><i class="f7-icons size-50">person</i></a>
 					    <a v-else class="link" href="/login/"><i class="f7-icons size-50">login</i></a>
@@ -133,6 +133,12 @@ import products from "./pages/products.vue"
 	  },
 	  isAdmin(){
 		  return this.$store.getters.isAdmin
+	  }
+  },
+  methods:{
+	  navigate(){
+		  this.$f7.getCurrentView().router.loadPage({pageName:'home-page',animatePages: true})
+		 
 	  }
   }
 };

@@ -1,16 +1,9 @@
 <template>
     <f7-page style="background-color:#ffffff;">
-				<f7-navbar layout="dark" back-link="Back" sliding style="color:#ffffff;">
-					<f7-nav-center sliding><img style="width:150px;" src="../assets/images/logo.png"/></f7-nav-center>
-					<f7-nav-right>
-						<f7-link icon="icon-bars" open-panel="right"></f7-link>
-					</f7-nav-right>
-				</f7-navbar>
-
-				<f7-block>
+	<f7-block>
         <h1 style="margin-bottom:0px;">Favorate Products</h1>
 				<f7-list media-list style="margin: 4px 0px;">
-					<favorate v-for="favorateProduct in favorateProducts" v-bind:key="favorateProduct['.key']" :favorateProduct="favorateProduct" :favorateProductId="favorateProduct.id"></favorate>
+					<favorate v-for="favorateProduct in sortedFavorateProducts" v-bind:key="favorateProduct['.key']" :favorateProduct="favorateProduct" :favorateProductId="favorateProduct.id"></favorate>
 				</f7-list>
 	</f7-block>
 
@@ -22,7 +15,7 @@ import favorate from "./favorate"
 export default {
   data() {
     return {
-		
+		favorateProducts: this.$store.getters.favProductDetails
 		};
 	},
 	created(){
@@ -32,9 +25,20 @@ export default {
 		user(){
 			return this.$store.getters.user
 		},
-		favorateProducts(){
-			return this.$store.getters.favProductDetails
-		}
+		// favorateProducts(){
+		// 	return this.$store.getters.favProductDetails
+		// },
+    sortedFavorateProducts: function() {
+      function compare(a, b) {
+        if (a.rating > b.rating)
+          return -1;
+        if (a.rating < b.rating)
+          return 1;
+        return 0;
+      }
+
+      return this.favorateProducts.sort(compare);
+    }
 	},
 	components:{
 			"favorate": favorate

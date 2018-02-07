@@ -30,6 +30,7 @@ export const store = new Vuex.Store({
         unfavorateProduct(state, payload) {
             const favoriteProducts = state.user.favoriteProducts
             for (var i = 0; i < favoriteProducts.length; i++)
+          
             if (favoriteProducts[i] === payload) {
              favoriteProducts.splice(i, 1)
                 break;

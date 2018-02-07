@@ -6,6 +6,7 @@
 			<f7-login-screen-title>SignUp</f7-login-screen-title>
 		<f7-list style="list-style: none;">
 			<form id="form" @submit.prevent="onSignUp">
+
 							<f7-list-item>
 								<f7-label>Username</f7-label>
 									<f7-input required name="username" placeholder="Username" type="text" id="username" v-model="name"></f7-input>
@@ -59,7 +60,7 @@ export default {
 	watch:{
 		user(value){
 			if(value !== null && value !== undefined){
-				this.$f7.getCurrentView().router.back({pageName:'home-page',animatePages: false})
+			this.$f7.getCurrentView().router.loadPage({pageName:'home-page',animatePages: false})
 			}
 		}
 	},

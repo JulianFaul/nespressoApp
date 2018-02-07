@@ -1,11 +1,11 @@
 <template>
     <f7-page style="background-color:#ffffff;">
-				<f7-navbar layout="dark" back-link="Back" sliding style="color:#ffffff;">
+				<!-- <f7-navbar layout="dark" back-link="Back" sliding style="color:#ffffff;">
 					<f7-nav-center sliding><img style="width:150px;" src="../assets/images/logo.png"/></f7-nav-center>
 					<f7-nav-right>
 						<f7-link icon="icon-bars" open-panel="right"></f7-link>
 					</f7-nav-right>
-				</f7-navbar>
+				</f7-navbar> -->
 
 				<f7-block>
        
@@ -48,6 +48,7 @@ export default {
 		methods:{
 	  onLogout(){
 		  this.$store.dispatch('logout')
+			this.$f7.getCurrentView().router.loadPage({pageName:'home-page',animatePages: true})
 		}
 	}		
 };

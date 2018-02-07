@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "nespresso-15ba4",
+    "staging": "nespresso-15ba4"
+  }
+}
