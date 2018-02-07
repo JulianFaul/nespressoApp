@@ -22,6 +22,9 @@ Vue.component('star-rating', StarRating)
 
 import likePopup from './pages/shared/likePopup.vue'
 Vue.component('likePopup', likePopup)
+
+import sharepopup from './pages/shared/sharepopup.vue'
+Vue.component('sharepopup', sharepopup)
 // Import App Custom Styles
 import AppStyles from './assets/sass/main.scss'
 

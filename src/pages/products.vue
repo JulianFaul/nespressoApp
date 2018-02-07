@@ -4,6 +4,7 @@
 		<f7-grid v-for="product in products" v-bind:key="product['.key']">
 			<product :product="product" :productId="product.id"></product>
 		<likePopup :product="product"></likePopup>
+		<sharepopup :product="product"></sharepopup>
 		</f7-grid>
 	</f7-block>
 

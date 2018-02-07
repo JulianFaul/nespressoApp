@@ -10,7 +10,7 @@
 						<f7-card-footer>
 							<span>{{product.name}}</span>
 						<div v-if="isUserSignedIn">
-			<f7-link v-if="!userLiked" :open-popup="'#popup' + product.id">LIKE</f7-link>
+			<f7-link v-if="!userLiked" :open-popup="'#favpopup' + product.id">LIKE</f7-link>
 			<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
 						</div>
 						</f7-card-footer>
