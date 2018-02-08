@@ -1,7 +1,7 @@
 <template>
     <f7-page style="background-color:#ffffff;">
 	<f7-block>
-        <h1 style="margin-bottom:0px;">Favorate Products</h1>
+        <h1 style="margin-bottom:0px;"></h1>
 				<f7-list media-list style="margin: 4px 0px;">
 					<favorate v-for="favorateProduct in sortedFavorateProducts" v-bind:key="favorateProduct['.key']" :favorateProduct="favorateProduct" :favorateProductId="favorateProduct.id"></favorate>
 				</f7-list>

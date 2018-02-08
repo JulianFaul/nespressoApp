@@ -151,6 +151,7 @@ export const store = new Vuex.Store({
             updateObj.intensity = payload.intensity
             updateObj.imageUrl = payload.imageUrl
             updateObj.price = payload.price
+            updateObj.range = payload.range
 
             firebase.database().ref('products').child(payload.id).update(updateObj)
                 .then(
@@ -178,7 +179,8 @@ export const store = new Vuex.Store({
                             itemDescription: obj[key].itemDescription,
                             intensity: obj[key].intensity,
                             imageUrl: obj[key].imageUrl,
-                            price: obj[key].price
+                            price: obj[key].price,
+                            range: obj[key].range
                         })
                     }
                     commit('setLoadedProducts', products)
@@ -198,7 +200,8 @@ export const store = new Vuex.Store({
                 itemDescription: payload.itemDescription,
                 intensity: payload.intensity,
                 imageUrl: payload.imageUrl,
-                price: payload.price
+                price: payload.price,
+                range: payload.range
             }
             firebase.database().ref('products').push(product).then(
                 (data) => {
@@ -278,7 +281,8 @@ clearUserFavProducts({commit,getters}, payload){
                             itemDescription: data.val().itemDescription,
                             intensity: data.val().intensity,
                             imageUrl: data.val().imageUrl,
-                            price: data.val().price
+                            price: data.val().price,
+                            range: data.val().range
                         })
                     })
                 }

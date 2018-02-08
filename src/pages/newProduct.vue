@@ -22,6 +22,10 @@
                                         <f7-input name="itemDescription" placeholder="Item Description" type="text" id="itemDescription" v-model="itemDescription"></f7-input>
                                     </f7-list-item>
                                     <f7-list-item>
+                                        <f7-label>Range</f7-label>
+                                        <f7-input name="range" placeholder="Range Name" type="text" id="range" v-model="range"></f7-input>
+                                    </f7-list-item>
+                                    <f7-list-item>
                                         <f7-label>Intensity</f7-label>
                                         <f7-input name="intensity" placeholder="Intensity" type="text" id="intensity" v-model="intensity"></f7-input>
                                     </f7-list-item>
@@ -141,6 +145,7 @@ export default {
     intensity:"",
     imageUrl:"",
     price:"",
+    range:""
     };
   },
   computed:{
@@ -150,7 +155,7 @@ export default {
 	},
   methods:{
       createProduct(){
-           this.$store.dispatch('createProduct',{name:this.name,productDescription:this.productDescription,itemDescription:this.itemDescription,intensity:this.intensity,imageUrl:this.imageUrl,price:this.price})
+           this.$store.dispatch('createProduct',{name:this.name,productDescription:this.productDescription,itemDescription:this.itemDescription,intensity:this.intensity,imageUrl:this.imageUrl,price:this.price,range:this.range})
       }
   }
 };

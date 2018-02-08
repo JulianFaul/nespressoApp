@@ -1,7 +1,6 @@
 <template>
 
 		<f7-list-item class="popup-link" >
-		
 			<f7-col>
 				<f7-card>
 					<f7-link :href="'/productdetails/' + product.id">

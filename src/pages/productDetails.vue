@@ -19,9 +19,9 @@
                 <!-- <button v-if="!userLiked" @click="likeProduct(product.id)" class="button"  type="submit">Like</button> -->
 								<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
                 <!-- <a href="#" class="link">Comment</a> -->
-               
+              
 								</div>
-								 	<f7-link :open-popup="'#sharepopup' + product.id">Share</f7-link>
+								  	<f7-link v-if="isUserSignedIn" :open-popup="'#sharepopup' + product.id">Share</f7-link>
             </div>
 		</f7-block>
 	</f7-page>

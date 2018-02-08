@@ -95,7 +95,7 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(/*! ./src/assert */ 48));
 __export(__webpack_require__(/*! ./src/crypt */ 49));
-__export(__webpack_require__(/*! ./src/constants */ 35));
+__export(__webpack_require__(/*! ./src/constants */ 36));
 __export(__webpack_require__(/*! ./src/deepCopy */ 95));
 __export(__webpack_require__(/*! ./src/deferred */ 96));
 __export(__webpack_require__(/*! ./src/environment */ 97));
@@ -1307,7 +1307,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(/*! ./listToStyles */ 181)
+var listToStyles = __webpack_require__(/*! ./listToStyles */ 182)
 
 /*
 type StyleObject = {
@@ -3110,7 +3110,7 @@ function reject(error) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_firebase__ = __webpack_require__(/*! firebase */ 34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_firebase__ = __webpack_require__(/*! firebase */ 35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_firebase___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_firebase__);
 
 
@@ -5004,7 +5004,7 @@ var util_1 = __webpack_require__(/*! @firebase/util */ 0);
 var util_2 = __webpack_require__(/*! ./util/util */ 1);
 var util_3 = __webpack_require__(/*! @firebase/util */ 0);
 var AuthTokenProvider_1 = __webpack_require__(/*! ./AuthTokenProvider */ 128);
-var StatsManager_1 = __webpack_require__(/*! ./stats/StatsManager */ 40);
+var StatsManager_1 = __webpack_require__(/*! ./stats/StatsManager */ 41);
 var StatsReporter_1 = __webpack_require__(/*! ./stats/StatsReporter */ 130);
 var StatsListener_1 = __webpack_require__(/*! ./stats/StatsListener */ 69);
 var EventQueue_1 = __webpack_require__(/*! ./view/EventQueue */ 131);
@@ -5924,1983 +5924,11 @@ var Location = /** @class */ (function () {
 
 /***/ }),
 /* 33 */
-/*!*****************************************!*\
-  !*** ./node_modules/process/browser.js ***!
-  \*****************************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 34 */
-/*!****************************************!*\
-  !*** ./node_modules/firebase/index.js ***!
-  \****************************************/
-/*! dynamic exports provided */
-/*! exports used: auth, database, initializeApp */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-var firebase = __webpack_require__(/*! ./app */ 88);
-__webpack_require__(/*! ./auth */ 106);
-__webpack_require__(/*! ./database */ 108);
-__webpack_require__(/*! ./messaging */ 143);
-__webpack_require__(/*! ./storage */ 150);
-
-module.exports = firebase;
-
-
-/***/ }),
-/* 35 */
-/*!***************************************************************!*\
-  !*** ./node_modules/@firebase/util/dist/cjs/src/constants.js ***!
-  \***************************************************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * @fileoverview Firebase constants.  Some of these (@defines) can be overridden at compile-time.
- */
-exports.CONSTANTS = {
-    /**
-     * @define {boolean} Whether this is the client Node.js SDK.
-     */
-    NODE_CLIENT: false,
-    /**
-     * @define {boolean} Whether this is the Admin Node.js SDK.
-     */
-    NODE_ADMIN: false,
-    /**
-     * Firebase SDK Version
-     */
-    SDK_VERSION: '${JSCORE_VERSION}'
-};
-
-//# sourceMappingURL=constants.js.map
-
-
-/***/ }),
-/* 36 */
-/*!***********************************************************************!*\
-  !*** ./node_modules/@firebase/database/dist/cjs/src/api/Reference.js ***!
-  \***********************************************************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var onDisconnect_1 = __webpack_require__(/*! ./onDisconnect */ 55);
-var TransactionResult_1 = __webpack_require__(/*! ./TransactionResult */ 112);
-var util_1 = __webpack_require__(/*! ../core/util/util */ 1);
-var NextPushId_1 = __webpack_require__(/*! ../core/util/NextPushId */ 113);
-var Query_1 = __webpack_require__(/*! ./Query */ 56);
-var Repo_1 = __webpack_require__(/*! ../core/Repo */ 28);
-var Path_1 = __webpack_require__(/*! ../core/util/Path */ 2);
-var QueryParams_1 = __webpack_require__(/*! ../core/view/QueryParams */ 137);
-var validation_1 = __webpack_require__(/*! ../core/util/validation */ 12);
-var util_2 = __webpack_require__(/*! @firebase/util */ 0);
-var util_3 = __webpack_require__(/*! @firebase/util */ 0);
-var SyncPoint_1 = __webpack_require__(/*! ../core/SyncPoint */ 67);
-var Reference = /** @class */ (function (_super) {
-    __extends(Reference, _super);
-    /**
-     * Call options:
-     *   new Reference(Repo, Path) or
-     *   new Reference(url: string, string|RepoManager)
-     *
-     * Externally - this is the firebase.database.Reference type.
-     *
-     * @param {!Repo} repo
-     * @param {(!Path)} path
-     * @extends {Query}
-     */
-    function Reference(repo, path) {
-        var _this = this;
-        if (!(repo instanceof Repo_1.Repo)) {
-            throw new Error('new Reference() no longer supported - use app.database().');
-        }
-        // call Query's constructor, passing in the repo and path.
-        _this = _super.call(this, repo, path, QueryParams_1.QueryParams.DEFAULT, false) || this;
-        return _this;
-    }
-    /** @return {?string} */
-    Reference.prototype.getKey = function () {
-        util_2.validateArgCount('Reference.key', 0, 0, arguments.length);
-        if (this.path.isEmpty())
-            return null;
-        else
-            return this.path.getBack();
-    };
-    /**
-     * @param {!(string|Path)} pathString
-     * @return {!Reference}
-     */
-    Reference.prototype.child = function (pathString) {
-        util_2.validateArgCount('Reference.child', 1, 1, arguments.length);
-        if (typeof pathString === 'number') {
-            pathString = String(pathString);
-        }
-        else if (!(pathString instanceof Path_1.Path)) {
-            if (this.path.getFront() === null)
-                validation_1.validateRootPathString('Reference.child', 1, pathString, false);
-            else
-                validation_1.validatePathString('Reference.child', 1, pathString, false);
-        }
-        return new Reference(this.repo, this.path.child(pathString));
-    };
-    /** @return {?Reference} */
-    Reference.prototype.getParent = function () {
-        util_2.validateArgCount('Reference.parent', 0, 0, arguments.length);
-        var parentPath = this.path.parent();
-        return parentPath === null ? null : new Reference(this.repo, parentPath);
-    };
-    /** @return {!Reference} */
-    Reference.prototype.getRoot = function () {
-        util_2.validateArgCount('Reference.root', 0, 0, arguments.length);
-        var ref = this;
-        while (ref.getParent() !== null) {
-            ref = ref.getParent();
-        }
-        return ref;
-    };
-    /** @return {!Database} */
-    Reference.prototype.databaseProp = function () {
-        return this.repo.database;
-    };
-    /**
-     * @param {*} newVal
-     * @param {function(?Error)=} onComplete
-     * @return {!Promise}
-     */
-    Reference.prototype.set = function (newVal, onComplete) {
-        util_2.validateArgCount('Reference.set', 1, 2, arguments.length);
-        validation_1.validateWritablePath('Reference.set', this.path);
-        validation_1.validateFirebaseDataArg('Reference.set', 1, newVal, this.path, false);
-        util_2.validateCallback('Reference.set', 2, onComplete, true);
-        var deferred = new util_3.Deferred();
-        this.repo.setWithPriority(this.path, newVal, 
-        /*priority=*/ null, deferred.wrapCallback(onComplete));
-        return deferred.promise;
-    };
-    /**
-     * @param {!Object} objectToMerge
-     * @param {function(?Error)=} onComplete
-     * @return {!Promise}
-     */
-    Reference.prototype.update = function (objectToMerge, onComplete) {
-        util_2.validateArgCount('Reference.update', 1, 2, arguments.length);
-        validation_1.validateWritablePath('Reference.update', this.path);
-        if (Array.isArray(objectToMerge)) {
-            var newObjectToMerge = {};
-            for (var i = 0; i < objectToMerge.length; ++i) {
-                newObjectToMerge['' + i] = objectToMerge[i];
-            }
-            objectToMerge = newObjectToMerge;
-            util_1.warn('Passing an Array to Firebase.update() is deprecated. ' +
-                'Use set() if you want to overwrite the existing data, or ' +
-                'an Object with integer keys if you really do want to ' +
-                'only update some of the children.');
-        }
-        validation_1.validateFirebaseMergeDataArg('Reference.update', 1, objectToMerge, this.path, false);
-        util_2.validateCallback('Reference.update', 2, onComplete, true);
-        var deferred = new util_3.Deferred();
-        this.repo.update(this.path, objectToMerge, deferred.wrapCallback(onComplete));
-        return deferred.promise;
-    };
-    /**
-     * @param {*} newVal
-     * @param {string|number|null} newPriority
-     * @param {function(?Error)=} onComplete
-     * @return {!Promise}
-     */
-    Reference.prototype.setWithPriority = function (newVal, newPriority, onComplete) {
-        util_2.validateArgCount('Reference.setWithPriority', 2, 3, arguments.length);
-        validation_1.validateWritablePath('Reference.setWithPriority', this.path);
-        validation_1.validateFirebaseDataArg('Reference.setWithPriority', 1, newVal, this.path, false);
-        validation_1.validatePriority('Reference.setWithPriority', 2, newPriority, false);
-        util_2.validateCallback('Reference.setWithPriority', 3, onComplete, true);
-        if (this.getKey() === '.length' || this.getKey() === '.keys')
-            throw 'Reference.setWithPriority failed: ' +
-                this.getKey() +
-                ' is a read-only object.';
-        var deferred = new util_3.Deferred();
-        this.repo.setWithPriority(this.path, newVal, newPriority, deferred.wrapCallback(onComplete));
-        return deferred.promise;
-    };
-    /**
-     * @param {function(?Error)=} onComplete
-     * @return {!Promise}
-     */
-    Reference.prototype.remove = function (onComplete) {
-        util_2.validateArgCount('Reference.remove', 0, 1, arguments.length);
-        validation_1.validateWritablePath('Reference.remove', this.path);
-        util_2.validateCallback('Reference.remove', 1, onComplete, true);
-        return this.set(null, onComplete);
-    };
-    /**
-     * @param {function(*):*} transactionUpdate
-     * @param {(function(?Error, boolean, ?DataSnapshot))=} onComplete
-     * @param {boolean=} applyLocally
-     * @return {!Promise}
-     */
-    Reference.prototype.transaction = function (transactionUpdate, onComplete, applyLocally) {
-        util_2.validateArgCount('Reference.transaction', 1, 3, arguments.length);
-        validation_1.validateWritablePath('Reference.transaction', this.path);
-        util_2.validateCallback('Reference.transaction', 1, transactionUpdate, false);
-        util_2.validateCallback('Reference.transaction', 2, onComplete, true);
-        // NOTE: applyLocally is an internal-only option for now.  We need to decide if we want to keep it and how
-        // to expose it.
-        validation_1.validateBoolean('Reference.transaction', 3, applyLocally, true);
-        if (this.getKey() === '.length' || this.getKey() === '.keys')
-            throw 'Reference.transaction failed: ' +
-                this.getKey() +
-                ' is a read-only object.';
-        if (applyLocally === undefined)
-            applyLocally = true;
-        var deferred = new util_3.Deferred();
-        if (typeof onComplete === 'function') {
-            deferred.promise.catch(function () { });
-        }
-        var promiseComplete = function (error, committed, snapshot) {
-            if (error) {
-                deferred.reject(error);
-            }
-            else {
-                deferred.resolve(new TransactionResult_1.TransactionResult(committed, snapshot));
-            }
-            if (typeof onComplete === 'function') {
-                onComplete(error, committed, snapshot);
-            }
-        };
-        this.repo.startTransaction(this.path, transactionUpdate, promiseComplete, applyLocally);
-        return deferred.promise;
-    };
-    /**
-     * @param {string|number|null} priority
-     * @param {function(?Error)=} onComplete
-     * @return {!Promise}
-     */
-    Reference.prototype.setPriority = function (priority, onComplete) {
-        util_2.validateArgCount('Reference.setPriority', 1, 2, arguments.length);
-        validation_1.validateWritablePath('Reference.setPriority', this.path);
-        validation_1.validatePriority('Reference.setPriority', 1, priority, false);
-        util_2.validateCallback('Reference.setPriority', 2, onComplete, true);
-        var deferred = new util_3.Deferred();
-        this.repo.setWithPriority(this.path.child('.priority'), priority, null, deferred.wrapCallback(onComplete));
-        return deferred.promise;
-    };
-    /**
-     * @param {*=} value
-     * @param {function(?Error)=} onComplete
-     * @return {!Reference}
-     */
-    Reference.prototype.push = function (value, onComplete) {
-        util_2.validateArgCount('Reference.push', 0, 2, arguments.length);
-        validation_1.validateWritablePath('Reference.push', this.path);
-        validation_1.validateFirebaseDataArg('Reference.push', 1, value, this.path, true);
-        util_2.validateCallback('Reference.push', 2, onComplete, true);
-        var now = this.repo.serverTime();
-        var name = NextPushId_1.nextPushId(now);
-        // push() returns a ThennableReference whose promise is fulfilled with a regular Reference.
-        // We use child() to create handles to two different references. The first is turned into a
-        // ThennableReference below by adding then() and catch() methods and is used as the
-        // return value of push(). The second remains a regular Reference and is used as the fulfilled
-        // value of the first ThennableReference.
-        var thennablePushRef = this.child(name);
-        var pushRef = this.child(name);
-        var promise;
-        if (value != null) {
-            promise = thennablePushRef.set(value, onComplete).then(function () { return pushRef; });
-        }
-        else {
-            promise = Promise.resolve(pushRef);
-        }
-        thennablePushRef.then = promise.then.bind(promise);
-        thennablePushRef.catch = promise.then.bind(promise, undefined);
-        if (typeof onComplete === 'function') {
-            promise.catch(function () { });
-        }
-        return thennablePushRef;
-    };
-    /**
-     * @return {!OnDisconnect}
-     */
-    Reference.prototype.onDisconnect = function () {
-        validation_1.validateWritablePath('Reference.onDisconnect', this.path);
-        return new onDisconnect_1.OnDisconnect(this.repo, this.path);
-    };
-    Object.defineProperty(Reference.prototype, "database", {
-        get: function () {
-            return this.databaseProp();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Reference.prototype, "key", {
-        get: function () {
-            return this.getKey();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Reference.prototype, "parent", {
-        get: function () {
-            return this.getParent();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Reference.prototype, "root", {
-        get: function () {
-            return this.getRoot();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return Reference;
-}(Query_1.Query));
-exports.Reference = Reference;
-/**
- * Define reference constructor in various modules
- *
- * We are doing this here to avoid several circular
- * dependency issues
- */
-Query_1.Query.__referenceConstructor = Reference;
-SyncPoint_1.SyncPoint.__referenceConstructor = Reference;
-
-//# sourceMappingURL=Reference.js.map
-
-
-/***/ }),
-/* 37 */
-/*!**************************************************************************!*\
-  !*** ./node_modules/@firebase/database/dist/cjs/src/api/DataSnapshot.js ***!
-  \**************************************************************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var util_1 = __webpack_require__(/*! @firebase/util */ 0);
-var validation_1 = __webpack_require__(/*! ../core/util/validation */ 12);
-var Path_1 = __webpack_require__(/*! ../core/util/Path */ 2);
-var PriorityIndex_1 = __webpack_require__(/*! ../core/snap/indexes/PriorityIndex */ 6);
-/**
- * Class representing a firebase data snapshot.  It wraps a SnapshotNode and
- * surfaces the public methods (val, forEach, etc.) we want to expose.
- */
-var DataSnapshot = /** @class */ (function () {
-    /**
-     * @param {!Node} node_ A SnapshotNode to wrap.
-     * @param {!Reference} ref_ The ref of the location this snapshot came from.
-     * @param {!Index} index_ The iteration order for this snapshot
-     */
-    function DataSnapshot(node_, ref_, index_) {
-        this.node_ = node_;
-        this.ref_ = ref_;
-        this.index_ = index_;
-    }
-    /**
-     * Retrieves the snapshot contents as JSON.  Returns null if the snapshot is
-     * empty.
-     *
-     * @return {*} JSON representation of the DataSnapshot contents, or null if empty.
-     */
-    DataSnapshot.prototype.val = function () {
-        util_1.validateArgCount('DataSnapshot.val', 0, 0, arguments.length);
-        return this.node_.val();
-    };
-    /**
-     * Returns the snapshot contents as JSON, including priorities of node.  Suitable for exporting
-     * the entire node contents.
-     * @return {*} JSON representation of the DataSnapshot contents, or null if empty.
-     */
-    DataSnapshot.prototype.exportVal = function () {
-        util_1.validateArgCount('DataSnapshot.exportVal', 0, 0, arguments.length);
-        return this.node_.val(true);
-    };
-    // Do not create public documentation. This is intended to make JSON serialization work but is otherwise unnecessary
-    // for end-users
-    DataSnapshot.prototype.toJSON = function () {
-        // Optional spacer argument is unnecessary because we're depending on recursion rather than stringifying the content
-        util_1.validateArgCount('DataSnapshot.toJSON', 0, 1, arguments.length);
-        return this.exportVal();
-    };
-    /**
-     * Returns whether the snapshot contains a non-null value.
-     *
-     * @return {boolean} Whether the snapshot contains a non-null value, or is empty.
-     */
-    DataSnapshot.prototype.exists = function () {
-        util_1.validateArgCount('DataSnapshot.exists', 0, 0, arguments.length);
-        return !this.node_.isEmpty();
-    };
-    /**
-     * Returns a DataSnapshot of the specified child node's contents.
-     *
-     * @param {!string} childPathString Path to a child.
-     * @return {!DataSnapshot} DataSnapshot for child node.
-     */
-    DataSnapshot.prototype.child = function (childPathString) {
-        util_1.validateArgCount('DataSnapshot.child', 0, 1, arguments.length);
-        // Ensure the childPath is a string (can be a number)
-        childPathString = String(childPathString);
-        validation_1.validatePathString('DataSnapshot.child', 1, childPathString, false);
-        var childPath = new Path_1.Path(childPathString);
-        var childRef = this.ref_.child(childPath);
-        return new DataSnapshot(this.node_.getChild(childPath), childRef, PriorityIndex_1.PRIORITY_INDEX);
-    };
-    /**
-     * Returns whether the snapshot contains a child at the specified path.
-     *
-     * @param {!string} childPathString Path to a child.
-     * @return {boolean} Whether the child exists.
-     */
-    DataSnapshot.prototype.hasChild = function (childPathString) {
-        util_1.validateArgCount('DataSnapshot.hasChild', 1, 1, arguments.length);
-        validation_1.validatePathString('DataSnapshot.hasChild', 1, childPathString, false);
-        var childPath = new Path_1.Path(childPathString);
-        return !this.node_.getChild(childPath).isEmpty();
-    };
-    /**
-     * Returns the priority of the object, or null if no priority was set.
-     *
-     * @return {string|number|null} The priority.
-     */
-    DataSnapshot.prototype.getPriority = function () {
-        util_1.validateArgCount('DataSnapshot.getPriority', 0, 0, arguments.length);
-        // typecast here because we never return deferred values or internal priorities (MAX_PRIORITY)
-        return this.node_.getPriority().val();
-    };
-    /**
-     * Iterates through child nodes and calls the specified action for each one.
-     *
-     * @param {function(!DataSnapshot)} action Callback function to be called
-     * for each child.
-     * @return {boolean} True if forEach was canceled by action returning true for
-     * one of the child nodes.
-     */
-    DataSnapshot.prototype.forEach = function (action) {
-        var _this = this;
-        util_1.validateArgCount('DataSnapshot.forEach', 1, 1, arguments.length);
-        util_1.validateCallback('DataSnapshot.forEach', 1, action, false);
-        if (this.node_.isLeafNode())
-            return false;
-        var childrenNode = this.node_;
-        // Sanitize the return value to a boolean. ChildrenNode.forEachChild has a weird return type...
-        return !!childrenNode.forEachChild(this.index_, function (key, node) {
-            return action(new DataSnapshot(node, _this.ref_.child(key), PriorityIndex_1.PRIORITY_INDEX));
-        });
-    };
-    /**
-     * Returns whether this DataSnapshot has children.
-     * @return {boolean} True if the DataSnapshot contains 1 or more child nodes.
-     */
-    DataSnapshot.prototype.hasChildren = function () {
-        util_1.validateArgCount('DataSnapshot.hasChildren', 0, 0, arguments.length);
-        if (this.node_.isLeafNode())
-            return false;
-        else
-            return !this.node_.isEmpty();
-    };
-    Object.defineProperty(DataSnapshot.prototype, "key", {
-        get: function () {
-            return this.ref_.getKey();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Returns the number of children for this DataSnapshot.
-     * @return {number} The number of children that this DataSnapshot contains.
-     */
-    DataSnapshot.prototype.numChildren = function () {
-        util_1.validateArgCount('DataSnapshot.numChildren', 0, 0, arguments.length);
-        return this.node_.numChildren();
-    };
-    /**
-     * @return {Reference} The Firebase reference for the location this snapshot's data came from.
-     */
-    DataSnapshot.prototype.getRef = function () {
-        util_1.validateArgCount('DataSnapshot.ref', 0, 0, arguments.length);
-        return this.ref_;
-    };
-    Object.defineProperty(DataSnapshot.prototype, "ref", {
-        get: function () {
-            return this.getRef();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return DataSnapshot;
-}());
-exports.DataSnapshot = DataSnapshot;
-
-//# sourceMappingURL=DataSnapshot.js.map
-
-
-/***/ }),
-/* 38 */
-/*!*********************************************************************************!*\
-  !*** ./node_modules/@firebase/database/dist/cjs/src/core/util/ImmutableTree.js ***!
-  \*********************************************************************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var SortedMap_1 = __webpack_require__(/*! ./SortedMap */ 27);
-var Path_1 = __webpack_require__(/*! ./Path */ 2);
-var util_1 = __webpack_require__(/*! ./util */ 1);
-var util_2 = __webpack_require__(/*! @firebase/util */ 0);
-var emptyChildrenSingleton;
-/**
- * Singleton empty children collection.
- *
- * @const
- * @type {!SortedMap.<string, !ImmutableTree.<?>>}
- */
-var EmptyChildren = function () {
-    if (!emptyChildrenSingleton) {
-        emptyChildrenSingleton = new SortedMap_1.SortedMap(util_1.stringCompare);
-    }
-    return emptyChildrenSingleton;
-};
-/**
- * A tree with immutable elements.
- */
-var ImmutableTree = /** @class */ (function () {
-    /**
-     * @template T
-     * @param {?T} value
-     * @param {SortedMap.<string, !ImmutableTree.<T>>=} children
-     */
-    function ImmutableTree(value, children) {
-        if (children === void 0) { children = EmptyChildren(); }
-        this.value = value;
-        this.children = children;
-    }
-    /**
-     * @template T
-     * @param {!Object.<string, !T>} obj
-     * @return {!ImmutableTree.<!T>}
-     */
-    ImmutableTree.fromObject = function (obj) {
-        var tree = ImmutableTree.Empty;
-        util_2.forEach(obj, function (childPath, childSnap) {
-            tree = tree.set(new Path_1.Path(childPath), childSnap);
-        });
-        return tree;
-    };
-    /**
-     * True if the value is empty and there are no children
-     * @return {boolean}
-     */
-    ImmutableTree.prototype.isEmpty = function () {
-        return this.value === null && this.children.isEmpty();
-    };
-    /**
-     * Given a path and predicate, return the first node and the path to that node
-     * where the predicate returns true.
-     *
-     * TODO Do a perf test -- If we're creating a bunch of {path: value:} objects
-     * on the way back out, it may be better to pass down a pathSoFar obj.
-     *
-     * @param {!Path} relativePath The remainder of the path
-     * @param {function(T):boolean} predicate The predicate to satisfy to return a
-     *   node
-     * @return {?{path:!Path, value:!T}}
-     */
-    ImmutableTree.prototype.findRootMostMatchingPathAndValue = function (relativePath, predicate) {
-        if (this.value != null && predicate(this.value)) {
-            return { path: Path_1.Path.Empty, value: this.value };
-        }
-        else {
-            if (relativePath.isEmpty()) {
-                return null;
-            }
-            else {
-                var front = relativePath.getFront();
-                var child = this.children.get(front);
-                if (child !== null) {
-                    var childExistingPathAndValue = child.findRootMostMatchingPathAndValue(relativePath.popFront(), predicate);
-                    if (childExistingPathAndValue != null) {
-                        var fullPath = new Path_1.Path(front).child(childExistingPathAndValue.path);
-                        return { path: fullPath, value: childExistingPathAndValue.value };
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                else {
-                    return null;
-                }
-            }
-        }
-    };
-    /**
-     * Find, if it exists, the shortest subpath of the given path that points a defined
-     * value in the tree
-     * @param {!Path} relativePath
-     * @return {?{path: !Path, value: !T}}
-     */
-    ImmutableTree.prototype.findRootMostValueAndPath = function (relativePath) {
-        return this.findRootMostMatchingPathAndValue(relativePath, function () { return true; });
-    };
-    /**
-     * @param {!Path} relativePath
-     * @return {!ImmutableTree.<T>} The subtree at the given path
-     */
-    ImmutableTree.prototype.subtree = function (relativePath) {
-        if (relativePath.isEmpty()) {
-            return this;
-        }
-        else {
-            var front = relativePath.getFront();
-            var childTree = this.children.get(front);
-            if (childTree !== null) {
-                return childTree.subtree(relativePath.popFront());
-            }
-            else {
-                return ImmutableTree.Empty;
-            }
-        }
-    };
-    /**
-     * Sets a value at the specified path.
-     *
-     * @param {!Path} relativePath Path to set value at.
-     * @param {?T} toSet Value to set.
-     * @return {!ImmutableTree.<T>} Resulting tree.
-     */
-    ImmutableTree.prototype.set = function (relativePath, toSet) {
-        if (relativePath.isEmpty()) {
-            return new ImmutableTree(toSet, this.children);
-        }
-        else {
-            var front = relativePath.getFront();
-            var child = this.children.get(front) || ImmutableTree.Empty;
-            var newChild = child.set(relativePath.popFront(), toSet);
-            var newChildren = this.children.insert(front, newChild);
-            return new ImmutableTree(this.value, newChildren);
-        }
-    };
-    /**
-     * Removes the value at the specified path.
-     *
-     * @param {!Path} relativePath Path to value to remove.
-     * @return {!ImmutableTree.<T>} Resulting tree.
-     */
-    ImmutableTree.prototype.remove = function (relativePath) {
-        if (relativePath.isEmpty()) {
-            if (this.children.isEmpty()) {
-                return ImmutableTree.Empty;
-            }
-            else {
-                return new ImmutableTree(null, this.children);
-            }
-        }
-        else {
-            var front = relativePath.getFront();
-            var child = this.children.get(front);
-            if (child) {
-                var newChild = child.remove(relativePath.popFront());
-                var newChildren = void 0;
-                if (newChild.isEmpty()) {
-                    newChildren = this.children.remove(front);
-                }
-                else {
-                    newChildren = this.children.insert(front, newChild);
-                }
-                if (this.value === null && newChildren.isEmpty()) {
-                    return ImmutableTree.Empty;
-                }
-                else {
-                    return new ImmutableTree(this.value, newChildren);
-                }
-            }
-            else {
-                return this;
-            }
-        }
-    };
-    /**
-     * Gets a value from the tree.
-     *
-     * @param {!Path} relativePath Path to get value for.
-     * @return {?T} Value at path, or null.
-     */
-    ImmutableTree.prototype.get = function (relativePath) {
-        if (relativePath.isEmpty()) {
-            return this.value;
-        }
-        else {
-            var front = relativePath.getFront();
-            var child = this.children.get(front);
-            if (child) {
-                return child.get(relativePath.popFront());
-            }
-            else {
-                return null;
-            }
-        }
-    };
-    /**
-     * Replace the subtree at the specified path with the given new tree.
-     *
-     * @param {!Path} relativePath Path to replace subtree for.
-     * @param {!ImmutableTree} newTree New tree.
-     * @return {!ImmutableTree} Resulting tree.
-     */
-    ImmutableTree.prototype.setTree = function (relativePath, newTree) {
-        if (relativePath.isEmpty()) {
-            return newTree;
-        }
-        else {
-            var front = relativePath.getFront();
-            var child = this.children.get(front) || ImmutableTree.Empty;
-            var newChild = child.setTree(relativePath.popFront(), newTree);
-            var newChildren = void 0;
-            if (newChild.isEmpty()) {
-                newChildren = this.children.remove(front);
-            }
-            else {
-                newChildren = this.children.insert(front, newChild);
-            }
-            return new ImmutableTree(this.value, newChildren);
-        }
-    };
-    /**
-     * Performs a depth first fold on this tree. Transforms a tree into a single
-     * value, given a function that operates on the path to a node, an optional
-     * current value, and a map of child names to folded subtrees
-     * @template V
-     * @param {function(Path, ?T, Object.<string, V>):V} fn
-     * @return {V}
-     */
-    ImmutableTree.prototype.fold = function (fn) {
-        return this.fold_(Path_1.Path.Empty, fn);
-    };
-    /**
-     * Recursive helper for public-facing fold() method
-     * @template V
-     * @param {!Path} pathSoFar
-     * @param {function(Path, ?T, Object.<string, V>):V} fn
-     * @return {V}
-     * @private
-     */
-    ImmutableTree.prototype.fold_ = function (pathSoFar, fn) {
-        var accum = {};
-        this.children.inorderTraversal(function (childKey, childTree) {
-            accum[childKey] = childTree.fold_(pathSoFar.child(childKey), fn);
-        });
-        return fn(pathSoFar, this.value, accum);
-    };
-    /**
-     * Find the first matching value on the given path. Return the result of applying f to it.
-     * @template V
-     * @param {!Path} path
-     * @param {!function(!Path, !T):?V} f
-     * @return {?V}
-     */
-    ImmutableTree.prototype.findOnPath = function (path, f) {
-        return this.findOnPath_(path, Path_1.Path.Empty, f);
-    };
-    ImmutableTree.prototype.findOnPath_ = function (pathToFollow, pathSoFar, f) {
-        var result = this.value ? f(pathSoFar, this.value) : false;
-        if (result) {
-            return result;
-        }
-        else {
-            if (pathToFollow.isEmpty()) {
-                return null;
-            }
-            else {
-                var front = pathToFollow.getFront();
-                var nextChild = this.children.get(front);
-                if (nextChild) {
-                    return nextChild.findOnPath_(pathToFollow.popFront(), pathSoFar.child(front), f);
-                }
-                else {
-                    return null;
-                }
-            }
-        }
-    };
-    /**
-     *
-     * @param {!Path} path
-     * @param {!function(!Path, !T)} f
-     * @returns {!ImmutableTree.<T>}
-     */
-    ImmutableTree.prototype.foreachOnPath = function (path, f) {
-        return this.foreachOnPath_(path, Path_1.Path.Empty, f);
-    };
-    ImmutableTree.prototype.foreachOnPath_ = function (pathToFollow, currentRelativePath, f) {
-        if (pathToFollow.isEmpty()) {
-            return this;
-        }
-        else {
-            if (this.value) {
-                f(currentRelativePath, this.value);
-            }
-            var front = pathToFollow.getFront();
-            var nextChild = this.children.get(front);
-            if (nextChild) {
-                return nextChild.foreachOnPath_(pathToFollow.popFront(), currentRelativePath.child(front), f);
-            }
-            else {
-                return ImmutableTree.Empty;
-            }
-        }
-    };
-    /**
-     * Calls the given function for each node in the tree that has a value.
-     *
-     * @param {function(!Path, !T)} f A function to be called with
-     *   the path from the root of the tree to a node, and the value at that node.
-     *   Called in depth-first order.
-     */
-    ImmutableTree.prototype.foreach = function (f) {
-        this.foreach_(Path_1.Path.Empty, f);
-    };
-    ImmutableTree.prototype.foreach_ = function (currentRelativePath, f) {
-        this.children.inorderTraversal(function (childName, childTree) {
-            childTree.foreach_(currentRelativePath.child(childName), f);
-        });
-        if (this.value) {
-            f(currentRelativePath, this.value);
-        }
-    };
-    /**
-     *
-     * @param {function(string, !T)} f
-     */
-    ImmutableTree.prototype.foreachChild = function (f) {
-        this.children.inorderTraversal(function (childName, childTree) {
-            if (childTree.value) {
-                f(childName, childTree.value);
-            }
-        });
-    };
-    ImmutableTree.Empty = new ImmutableTree(null);
-    return ImmutableTree;
-}());
-exports.ImmutableTree = ImmutableTree;
-
-//# sourceMappingURL=ImmutableTree.js.map
-
-
-/***/ }),
-/* 39 */
-/*!****************************************************************************************!*\
-  !*** ./node_modules/@firebase/database/dist/cjs/src/core/view/filter/IndexedFilter.js ***!
-  \****************************************************************************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var util_1 = __webpack_require__(/*! @firebase/util */ 0);
-var Change_1 = __webpack_require__(/*! ../Change */ 17);
-var ChildrenNode_1 = __webpack_require__(/*! ../../snap/ChildrenNode */ 7);
-var PriorityIndex_1 = __webpack_require__(/*! ../../snap/indexes/PriorityIndex */ 6);
-/**
- * Doesn't really filter nodes but applies an index to the node and keeps track of any changes
- *
- * @constructor
- * @implements {NodeFilter}
- * @param {!Index} index
- */
-var IndexedFilter = /** @class */ (function () {
-    function IndexedFilter(index_) {
-        this.index_ = index_;
-    }
-    IndexedFilter.prototype.updateChild = function (snap, key, newChild, affectedPath, source, optChangeAccumulator) {
-        util_1.assert(snap.isIndexed(this.index_), 'A node must be indexed if only a child is updated');
-        var oldChild = snap.getImmediateChild(key);
-        // Check if anything actually changed.
-        if (oldChild.getChild(affectedPath).equals(newChild.getChild(affectedPath))) {
-            // There's an edge case where a child can enter or leave the view because affectedPath was set to null.
-            // In this case, affectedPath will appear null in both the old and new snapshots.  So we need
-            // to avoid treating these cases as "nothing changed."
-            if (oldChild.isEmpty() == newChild.isEmpty()) {
-                // Nothing changed.
-                // This assert should be valid, but it's expensive (can dominate perf testing) so don't actually do it.
-                //assert(oldChild.equals(newChild), 'Old and new snapshots should be equal.');
-                return snap;
-            }
-        }
-        if (optChangeAccumulator != null) {
-            if (newChild.isEmpty()) {
-                if (snap.hasChild(key)) {
-                    optChangeAccumulator.trackChildChange(Change_1.Change.childRemovedChange(key, oldChild));
-                }
-                else {
-                    util_1.assert(snap.isLeafNode(), 'A child remove without an old child only makes sense on a leaf node');
-                }
-            }
-            else if (oldChild.isEmpty()) {
-                optChangeAccumulator.trackChildChange(Change_1.Change.childAddedChange(key, newChild));
-            }
-            else {
-                optChangeAccumulator.trackChildChange(Change_1.Change.childChangedChange(key, newChild, oldChild));
-            }
-        }
-        if (snap.isLeafNode() && newChild.isEmpty()) {
-            return snap;
-        }
-        else {
-            // Make sure the node is indexed
-            return snap.updateImmediateChild(key, newChild).withIndex(this.index_);
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    IndexedFilter.prototype.updateFullNode = function (oldSnap, newSnap, optChangeAccumulator) {
-        if (optChangeAccumulator != null) {
-            if (!oldSnap.isLeafNode()) {
-                oldSnap.forEachChild(PriorityIndex_1.PRIORITY_INDEX, function (key, childNode) {
-                    if (!newSnap.hasChild(key)) {
-                        optChangeAccumulator.trackChildChange(Change_1.Change.childRemovedChange(key, childNode));
-                    }
-                });
-            }
-            if (!newSnap.isLeafNode()) {
-                newSnap.forEachChild(PriorityIndex_1.PRIORITY_INDEX, function (key, childNode) {
-                    if (oldSnap.hasChild(key)) {
-                        var oldChild = oldSnap.getImmediateChild(key);
-                        if (!oldChild.equals(childNode)) {
-                            optChangeAccumulator.trackChildChange(Change_1.Change.childChangedChange(key, childNode, oldChild));
-                        }
-                    }
-                    else {
-                        optChangeAccumulator.trackChildChange(Change_1.Change.childAddedChange(key, childNode));
-                    }
-                });
-            }
-        }
-        return newSnap.withIndex(this.index_);
-    };
-    /**
-     * @inheritDoc
-     */
-    IndexedFilter.prototype.updatePriority = function (oldSnap, newPriority) {
-        if (oldSnap.isEmpty()) {
-            return ChildrenNode_1.ChildrenNode.EMPTY_NODE;
-        }
-        else {
-            return oldSnap.updatePriority(newPriority);
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    IndexedFilter.prototype.filtersNodes = function () {
-        return false;
-    };
-    /**
-     * @inheritDoc
-     */
-    IndexedFilter.prototype.getIndexedFilter = function () {
-        return this;
-    };
-    /**
-     * @inheritDoc
-     */
-    IndexedFilter.prototype.getIndex = function () {
-        return this.index_;
-    };
-    return IndexedFilter;
-}());
-exports.IndexedFilter = IndexedFilter;
-
-//# sourceMappingURL=IndexedFilter.js.map
-
-
-/***/ }),
-/* 40 */
-/*!*********************************************************************************!*\
-  !*** ./node_modules/@firebase/database/dist/cjs/src/core/stats/StatsManager.js ***!
-  \*********************************************************************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var StatsCollection_1 = __webpack_require__(/*! ./StatsCollection */ 129);
-var StatsManager = /** @class */ (function () {
-    function StatsManager() {
-    }
-    StatsManager.getCollection = function (repoInfo) {
-        var hashString = repoInfo.toString();
-        if (!this.collections_[hashString]) {
-            this.collections_[hashString] = new StatsCollection_1.StatsCollection();
-        }
-        return this.collections_[hashString];
-    };
-    StatsManager.getOrCreateReporter = function (repoInfo, creatorFunction) {
-        var hashString = repoInfo.toString();
-        if (!this.reporters_[hashString]) {
-            this.reporters_[hashString] = creatorFunction();
-        }
-        return this.reporters_[hashString];
-    };
-    StatsManager.collections_ = {};
-    StatsManager.reporters_ = {};
-    return StatsManager;
-}());
-exports.StatsManager = StatsManager;
-
-//# sourceMappingURL=StatsManager.js.map
-
-
-/***/ }),
-/* 41 */
-/*!**************************************************************************!*\
-  !*** ./node_modules/@firebase/database/dist/cjs/src/core/RepoManager.js ***!
-  \**************************************************************************/
-/*! dynamic exports provided */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var util_1 = __webpack_require__(/*! @firebase/util */ 0);
-var Repo_1 = __webpack_require__(/*! ./Repo */ 28);
-var util_2 = __webpack_require__(/*! ./util/util */ 1);
-var parser_1 = __webpack_require__(/*! ./util/libs/parser */ 53);
-var validation_1 = __webpack_require__(/*! ./util/validation */ 12);
-__webpack_require__(/*! ./Repo_transaction */ 139);
-/** @const {string} */
-var DATABASE_URL_OPTION = 'databaseURL';
-var _staticInstance;
-/**
- * Creates and caches Repo instances.
- */
-var RepoManager = /** @class */ (function () {
-    function RepoManager() {
-        /**
-         * @private {!Object.<string, Object<string, !fb.core.Repo>>}
-         */
-        this.repos_ = {};
-        /**
-         * If true, new Repos will be created to use ReadonlyRestClient (for testing purposes).
-         * @private {boolean}
-         */
-        this.useRestClient_ = false;
-    }
-    RepoManager.getInstance = function () {
-        if (!_staticInstance) {
-            _staticInstance = new RepoManager();
-        }
-        return _staticInstance;
-    };
-    // TODO(koss): Remove these functions unless used in tests?
-    RepoManager.prototype.interrupt = function () {
-        for (var appName in this.repos_) {
-            for (var dbUrl in this.repos_[appName]) {
-                this.repos_[appName][dbUrl].interrupt();
-            }
-        }
-    };
-    RepoManager.prototype.resume = function () {
-        for (var appName in this.repos_) {
-            for (var dbUrl in this.repos_[appName]) {
-                this.repos_[appName][dbUrl].resume();
-            }
-        }
-    };
-    /**
-     * This function should only ever be called to CREATE a new database instance.
-     *
-     * @param {!FirebaseApp} app
-     * @return {!Database}
-     */
-    RepoManager.prototype.databaseFromApp = function (app, url) {
-        var dbUrl = url || app.options[DATABASE_URL_OPTION];
-        if (dbUrl === undefined) {
-            util_2.fatal("Can't determine Firebase Database URL.  Be sure to include " +
-                DATABASE_URL_OPTION +
-                ' option when calling firebase.initializeApp().');
-        }
-        var parsedUrl = parser_1.parseRepoInfo(dbUrl);
-        var repoInfo = parsedUrl.repoInfo;
-        validation_1.validateUrl('Invalid Firebase Database URL', 1, parsedUrl);
-        if (!parsedUrl.path.isEmpty()) {
-            util_2.fatal('Database URL must point to the root of a Firebase Database ' +
-                '(not including a child path).');
-        }
-        var repo = this.createRepo(repoInfo, app);
-        return repo.database;
-    };
-    /**
-     * Remove the repo and make sure it is disconnected.
-     *
-     * @param {!Repo} repo
-     */
-    RepoManager.prototype.deleteRepo = function (repo) {
-        var appRepos = util_1.safeGet(this.repos_, repo.app.name);
-        // This should never happen...
-        if (!appRepos || util_1.safeGet(appRepos, repo.repoInfo_.toURLString()) !== repo) {
-            util_2.fatal("Database " + repo.app.name + "(" + repo.repoInfo_ + ") has already been deleted.");
-        }
-        repo.interrupt();
-        delete appRepos[repo.repoInfo_.toURLString()];
-    };
-    /**
-     * Ensures a repo doesn't already exist and then creates one using the
-     * provided app.
-     *
-     * @param {!RepoInfo} repoInfo The metadata about the Repo
-     * @param {!FirebaseApp} app
-     * @return {!Repo} The Repo object for the specified server / repoName.
-     */
-    RepoManager.prototype.createRepo = function (repoInfo, app) {
-        var appRepos = util_1.safeGet(this.repos_, app.name);
-        if (!appRepos) {
-            appRepos = {};
-            this.repos_[app.name] = appRepos;
-        }
-        var repo = util_1.safeGet(appRepos, repoInfo.toURLString());
-        if (repo) {
-            util_2.fatal('Database initialized multiple times. Please make sure the format of the database URL matches with each database() call.');
-        }
-        repo = new Repo_1.Repo(repoInfo, this.useRestClient_, app);
-        appRepos[repoInfo.toURLString()] = repo;
-        return repo;
-    };
-    /**
-     * Forces us to use ReadonlyRestClient instead of PersistentConnection for new Repos.
-     * @param {boolean} forceRestClient
-     */
-    RepoManager.prototype.forceRestClient = function (forceRestClient) {
-        this.useRestClient_ = forceRestClient;
-    };
-    return RepoManager;
-}());
-exports.RepoManager = RepoManager;
-
-//# sourceMappingURL=RepoManager.js.map
-
-
-/***/ }),
-/* 42 */
-/*!****************************************************************************!*\
-  !*** ./node_modules/@firebase/storage/dist/esm/src/implementation/args.js ***!
-  \****************************************************************************/
-/*! exports provided: validate, ArgSpec, and_, stringSpec, uploadDataSpec, metadataSpec, nonNegativeNumberSpec, looseObjectSpec, nullFunctionSpec */
-/*! exports used: looseObjectSpec, metadataSpec, nonNegativeNumberSpec, nullFunctionSpec, stringSpec, uploadDataSpec, validate */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["g"] = validate;
-/* unused harmony export ArgSpec */
-/* unused harmony export and_ */
-/* harmony export (immutable) */ __webpack_exports__["e"] = stringSpec;
-/* harmony export (immutable) */ __webpack_exports__["f"] = uploadDataSpec;
-/* harmony export (immutable) */ __webpack_exports__["b"] = metadataSpec;
-/* harmony export (immutable) */ __webpack_exports__["c"] = nonNegativeNumberSpec;
-/* harmony export (immutable) */ __webpack_exports__["a"] = looseObjectSpec;
-/* harmony export (immutable) */ __webpack_exports__["d"] = nullFunctionSpec;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__error__ = __webpack_require__(/*! ./error */ 10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__metadata__ = __webpack_require__(/*! ./metadata */ 43);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__type__ = __webpack_require__(/*! ./type */ 9);
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
-
-/**
- * @param name Name of the function.
- * @param specs Argument specs.
- * @param passed The actual arguments passed to the function.
- * @throws {fbs.Error} If the arguments are invalid.
- */
-function validate(name, specs, passed) {
-    var minArgs = specs.length;
-    var maxArgs = specs.length;
-    for (var i = 0; i < specs.length; i++) {
-        if (specs[i].optional) {
-            minArgs = i;
-            break;
-        }
-    }
-    var validLength = minArgs <= passed.length && passed.length <= maxArgs;
-    if (!validLength) {
-        throw __WEBPACK_IMPORTED_MODULE_0__error__["g" /* invalidArgumentCount */](minArgs, maxArgs, name, passed.length);
-    }
-    for (var i = 0; i < passed.length; i++) {
-        try {
-            specs[i].validator(passed[i]);
-        }
-        catch (e) {
-            if (e instanceof Error) {
-                throw __WEBPACK_IMPORTED_MODULE_0__error__["f" /* invalidArgument */](i, name, e.message);
-            }
-            else {
-                throw __WEBPACK_IMPORTED_MODULE_0__error__["f" /* invalidArgument */](i, name, e);
-            }
-        }
-    }
-}
-/**
- * @struct
- */
-var ArgSpec = /** @class */ (function () {
-    function ArgSpec(validator, opt_optional) {
-        var self = this;
-        this.validator = function (p) {
-            if (self.optional && !__WEBPACK_IMPORTED_MODULE_2__type__["c" /* isJustDef */](p)) {
-                return;
-            }
-            validator(p);
-        };
-        this.optional = !!opt_optional;
-    }
-    return ArgSpec;
-}());
-
-function and_(v1, v2) {
-    return function (p) {
-        v1(p);
-        v2(p);
-    };
-}
-function stringSpec(opt_validator, opt_optional) {
-    function stringValidator(p) {
-        if (!__WEBPACK_IMPORTED_MODULE_2__type__["j" /* isString */](p)) {
-            throw 'Expected string.';
-        }
-    }
-    var validator;
-    if (opt_validator) {
-        validator = and_(stringValidator, opt_validator);
-    }
-    else {
-        validator = stringValidator;
-    }
-    return new ArgSpec(validator, opt_optional);
-}
-function uploadDataSpec() {
-    function validator(p) {
-        var valid = p instanceof Uint8Array ||
-            p instanceof ArrayBuffer ||
-            (__WEBPACK_IMPORTED_MODULE_2__type__["e" /* isNativeBlobDefined */]() && p instanceof Blob);
-        if (!valid) {
-            throw 'Expected Blob or File.';
-        }
-    }
-    return new ArgSpec(validator);
-}
-function metadataSpec(opt_optional) {
-    return new ArgSpec(__WEBPACK_IMPORTED_MODULE_1__metadata__["c" /* metadataValidator */], opt_optional);
-}
-function nonNegativeNumberSpec() {
-    function validator(p) {
-        var valid = __WEBPACK_IMPORTED_MODULE_2__type__["h" /* isNumber */](p) && p >= 0;
-        if (!valid) {
-            throw 'Expected a number 0 or greater.';
-        }
-    }
-    return new ArgSpec(validator);
-}
-function looseObjectSpec(opt_validator, opt_optional) {
-    function validator(p) {
-        var isLooseObject = p === null || (__WEBPACK_IMPORTED_MODULE_2__type__["a" /* isDef */](p) && p instanceof Object);
-        if (!isLooseObject) {
-            throw 'Expected an Object.';
-        }
-        if (opt_validator !== undefined && opt_validator !== null) {
-            opt_validator(p);
-        }
-    }
-    return new ArgSpec(validator, opt_optional);
-}
-function nullFunctionSpec(opt_optional) {
-    function validator(p) {
-        var valid = p === null || __WEBPACK_IMPORTED_MODULE_2__type__["b" /* isFunction */](p);
-        if (!valid) {
-            throw 'Expected a Function.';
-        }
-    }
-    return new ArgSpec(validator, opt_optional);
-}
-
-//# sourceMappingURL=args.js.map
-
-
-/***/ }),
-/* 43 */
-/*!********************************************************************************!*\
-  !*** ./node_modules/@firebase/storage/dist/esm/src/implementation/metadata.js ***!
-  \********************************************************************************/
-/*! exports provided: noXform_, Mapping, xformPath, getMappings, addRef, fromResource, fromResourceString, toResourceString, metadataValidator */
-/*! exports used: fromResourceString, getMappings, metadataValidator, toResourceString */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export noXform_ */
-/* unused harmony export Mapping */
-/* unused harmony export xformPath */
-/* harmony export (immutable) */ __webpack_exports__["b"] = getMappings;
-/* unused harmony export addRef */
-/* unused harmony export fromResource */
-/* harmony export (immutable) */ __webpack_exports__["a"] = fromResourceString;
-/* harmony export (immutable) */ __webpack_exports__["d"] = toResourceString;
-/* harmony export (immutable) */ __webpack_exports__["c"] = metadataValidator;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__json__ = __webpack_require__(/*! ./json */ 154);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__location__ = __webpack_require__(/*! ./location */ 32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__path__ = __webpack_require__(/*! ./path */ 83);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__type__ = __webpack_require__(/*! ./type */ 9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__url__ = __webpack_require__(/*! ./url */ 44);
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
-
-
-
-function noXform_(metadata, value) {
-    return value;
-}
-/**
- * @struct
- */
-var Mapping = /** @class */ (function () {
-    function Mapping(server, opt_local, opt_writable, opt_xform) {
-        this.server = server;
-        this.local = opt_local || server;
-        this.writable = !!opt_writable;
-        this.xform = opt_xform || noXform_;
-    }
-    return Mapping;
-}());
-
-var mappings_ = null;
-function xformPath(fullPath) {
-    var valid = __WEBPACK_IMPORTED_MODULE_3__type__["j" /* isString */](fullPath);
-    if (!valid || fullPath.length < 2) {
-        return fullPath;
-    }
-    else {
-        fullPath = fullPath;
-        return __WEBPACK_IMPORTED_MODULE_2__path__["b" /* lastComponent */](fullPath);
-    }
-}
-function getMappings() {
-    if (mappings_) {
-        return mappings_;
-    }
-    var mappings = [];
-    mappings.push(new Mapping('bucket'));
-    mappings.push(new Mapping('generation'));
-    mappings.push(new Mapping('metageneration'));
-    mappings.push(new Mapping('name', 'fullPath', true));
-    function mappingsXformPath(metadata, fullPath) {
-        return xformPath(fullPath);
-    }
-    var nameMapping = new Mapping('name');
-    nameMapping.xform = mappingsXformPath;
-    mappings.push(nameMapping);
-    /**
-     * Coerces the second param to a number, if it is defined.
-     */
-    function xformSize(metadata, size) {
-        if (__WEBPACK_IMPORTED_MODULE_3__type__["a" /* isDef */](size)) {
-            return +size;
-        }
-        else {
-            return size;
-        }
-    }
-    var sizeMapping = new Mapping('size');
-    sizeMapping.xform = xformSize;
-    mappings.push(sizeMapping);
-    mappings.push(new Mapping('timeCreated'));
-    mappings.push(new Mapping('updated'));
-    mappings.push(new Mapping('md5Hash', null, true));
-    mappings.push(new Mapping('cacheControl', null, true));
-    mappings.push(new Mapping('contentDisposition', null, true));
-    mappings.push(new Mapping('contentEncoding', null, true));
-    mappings.push(new Mapping('contentLanguage', null, true));
-    mappings.push(new Mapping('contentType', null, true));
-    mappings.push(new Mapping('metadata', 'customMetadata', true));
-    /**
-     * Transforms a comma-separated string of tokens into a list of download
-     * URLs.
-     */
-    function xformTokens(metadata, tokens) {
-        var valid = __WEBPACK_IMPORTED_MODULE_3__type__["j" /* isString */](tokens) && tokens.length > 0;
-        if (!valid) {
-            // This can happen if objects are uploaded through GCS and retrieved
-            // through list, so we don't want to throw an Error.
-            return [];
-        }
-        var encode = encodeURIComponent;
-        var tokensList = tokens.split(',');
-        var urls = tokensList.map(function (token) {
-            var bucket = metadata['bucket'];
-            var path = metadata['fullPath'];
-            var urlPart = '/b/' + encode(bucket) + '/o/' + encode(path);
-            var base = __WEBPACK_IMPORTED_MODULE_4__url__["a" /* makeDownloadUrl */](urlPart);
-            var queryString = __WEBPACK_IMPORTED_MODULE_4__url__["c" /* makeQueryString */]({
-                alt: 'media',
-                token: token
-            });
-            return base + queryString;
-        });
-        return urls;
-    }
-    mappings.push(new Mapping('downloadTokens', 'downloadURLs', false, xformTokens));
-    mappings_ = mappings;
-    return mappings_;
-}
-function addRef(metadata, authWrapper) {
-    function generateRef() {
-        var bucket = metadata['bucket'];
-        var path = metadata['fullPath'];
-        var loc = new __WEBPACK_IMPORTED_MODULE_1__location__["a" /* Location */](bucket, path);
-        return authWrapper.makeStorageReference(loc);
-    }
-    Object.defineProperty(metadata, 'ref', { get: generateRef });
-}
-function fromResource(authWrapper, resource, mappings) {
-    var metadata = {};
-    metadata['type'] = 'file';
-    var len = mappings.length;
-    for (var i = 0; i < len; i++) {
-        var mapping = mappings[i];
-        metadata[mapping.local] = mapping.xform(metadata, resource[mapping.server]);
-    }
-    addRef(metadata, authWrapper);
-    return metadata;
-}
-function fromResourceString(authWrapper, resourceString, mappings) {
-    var obj = __WEBPACK_IMPORTED_MODULE_0__json__["a" /* jsonObjectOrNull */](resourceString);
-    if (obj === null) {
-        return null;
-    }
-    var resource = obj;
-    return fromResource(authWrapper, resource, mappings);
-}
-function toResourceString(metadata, mappings) {
-    var resource = {};
-    var len = mappings.length;
-    for (var i = 0; i < len; i++) {
-        var mapping = mappings[i];
-        if (mapping.writable) {
-            resource[mapping.server] = metadata[mapping.local];
-        }
-    }
-    return JSON.stringify(resource);
-}
-function metadataValidator(p) {
-    var validType = p && __WEBPACK_IMPORTED_MODULE_3__type__["i" /* isObject */](p);
-    if (!validType) {
-        throw 'Expected Metadata object.';
-    }
-    for (var key in p) {
-        var val = p[key];
-        if (key === 'customMetadata') {
-            if (!__WEBPACK_IMPORTED_MODULE_3__type__["i" /* isObject */](val)) {
-                throw 'Expected object for \'customMetadata\' mapping.';
-            }
-        }
-        else {
-            if (__WEBPACK_IMPORTED_MODULE_3__type__["g" /* isNonNullObject */](val)) {
-                throw "Mapping for '" + key + "' cannot be an object.";
-            }
-        }
-    }
-}
-
-//# sourceMappingURL=metadata.js.map
-
-
-/***/ }),
-/* 44 */
-/*!***************************************************************************!*\
-  !*** ./node_modules/@firebase/storage/dist/esm/src/implementation/url.js ***!
-  \***************************************************************************/
-/*! exports provided: makeNormalUrl, makeDownloadUrl, makeUploadUrl, makeQueryString */
-/*! exports used: makeDownloadUrl, makeNormalUrl, makeQueryString, makeUploadUrl */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["b"] = makeNormalUrl;
-/* harmony export (immutable) */ __webpack_exports__["a"] = makeDownloadUrl;
-/* harmony export (immutable) */ __webpack_exports__["d"] = makeUploadUrl;
-/* harmony export (immutable) */ __webpack_exports__["c"] = makeQueryString;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(/*! ./constants */ 31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__object__ = __webpack_require__(/*! ./object */ 18);
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * @fileoverview Functions to create and manipulate URLs for the server API.
- */
-
-
-function makeNormalUrl(urlPart) {
-    return __WEBPACK_IMPORTED_MODULE_0__constants__["f" /* domainBase */] + __WEBPACK_IMPORTED_MODULE_0__constants__["a" /* apiBaseUrl */] + urlPart;
-}
-function makeDownloadUrl(urlPart) {
-    return __WEBPACK_IMPORTED_MODULE_0__constants__["g" /* downloadBase */] + __WEBPACK_IMPORTED_MODULE_0__constants__["a" /* apiBaseUrl */] + urlPart;
-}
-function makeUploadUrl(urlPart) {
-    return __WEBPACK_IMPORTED_MODULE_0__constants__["f" /* domainBase */] + __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* apiUploadBaseUrl */] + urlPart;
-}
-function makeQueryString(params) {
-    var encode = encodeURIComponent;
-    var queryPart = '?';
-    __WEBPACK_IMPORTED_MODULE_1__object__["b" /* forEach */](params, function (key, val) {
-        var nextPart = encode(key) + '=' + encode(val);
-        queryPart = queryPart + nextPart + '&';
-    });
-    // Chop off the extra '&' or '?' on the end
-    queryPart = queryPart.slice(0, -1);
-    return queryPart;
-}
-
-//# sourceMappingURL=url.js.map
-
-
-/***/ }),
-/* 45 */
-/*!*****************************************************************************!*\
-  !*** ./node_modules/@firebase/storage/dist/esm/src/implementation/array.js ***!
-  \*****************************************************************************/
-/*! exports provided: contains, clone, remove */
-/*! exports used: clone, contains, remove */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["b"] = contains;
-/* harmony export (immutable) */ __webpack_exports__["a"] = clone;
-/* harmony export (immutable) */ __webpack_exports__["c"] = remove;
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Returns true if the object is contained in the array (compared with ===).
- * @template T
- */
-function contains(array, elem) {
-    return array.indexOf(elem) !== -1;
-}
-/**
- * Returns a shallow copy of the array or array-like object (e.g. arguments).
- * @template T
- */
-function clone(arraylike) {
-    return Array.prototype.slice.call(arraylike);
-}
-/**
- * Removes the given element from the given array, if it is contained.
- * Directly modifies the passed-in array.
- * @template T
- */
-function remove(array, elem) {
-    var i = array.indexOf(elem);
-    if (i !== -1) {
-        array.splice(i, 1);
-    }
-}
-
-//# sourceMappingURL=array.js.map
-
-
-/***/ }),
-/* 46 */
 /*!*********************************************!*\
   !*** ./node_modules/vue/dist/vue.common.js ***!
   \*********************************************/
 /*! dynamic exports provided */
-/*! exports used: default */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18717,6 +16745,1978 @@ module.exports = Vue$3;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../webpack/buildin/global.js */ 16), __webpack_require__(/*! ./../../timers-browserify/main.js */ 47).setImmediate))
 
 /***/ }),
+/* 34 */
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 35 */
+/*!****************************************!*\
+  !*** ./node_modules/firebase/index.js ***!
+  \****************************************/
+/*! dynamic exports provided */
+/*! exports used: auth, database, initializeApp */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var firebase = __webpack_require__(/*! ./app */ 88);
+__webpack_require__(/*! ./auth */ 106);
+__webpack_require__(/*! ./database */ 108);
+__webpack_require__(/*! ./messaging */ 143);
+__webpack_require__(/*! ./storage */ 150);
+
+module.exports = firebase;
+
+
+/***/ }),
+/* 36 */
+/*!***************************************************************!*\
+  !*** ./node_modules/@firebase/util/dist/cjs/src/constants.js ***!
+  \***************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @fileoverview Firebase constants.  Some of these (@defines) can be overridden at compile-time.
+ */
+exports.CONSTANTS = {
+    /**
+     * @define {boolean} Whether this is the client Node.js SDK.
+     */
+    NODE_CLIENT: false,
+    /**
+     * @define {boolean} Whether this is the Admin Node.js SDK.
+     */
+    NODE_ADMIN: false,
+    /**
+     * Firebase SDK Version
+     */
+    SDK_VERSION: '${JSCORE_VERSION}'
+};
+
+//# sourceMappingURL=constants.js.map
+
+
+/***/ }),
+/* 37 */
+/*!***********************************************************************!*\
+  !*** ./node_modules/@firebase/database/dist/cjs/src/api/Reference.js ***!
+  \***********************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var onDisconnect_1 = __webpack_require__(/*! ./onDisconnect */ 55);
+var TransactionResult_1 = __webpack_require__(/*! ./TransactionResult */ 112);
+var util_1 = __webpack_require__(/*! ../core/util/util */ 1);
+var NextPushId_1 = __webpack_require__(/*! ../core/util/NextPushId */ 113);
+var Query_1 = __webpack_require__(/*! ./Query */ 56);
+var Repo_1 = __webpack_require__(/*! ../core/Repo */ 28);
+var Path_1 = __webpack_require__(/*! ../core/util/Path */ 2);
+var QueryParams_1 = __webpack_require__(/*! ../core/view/QueryParams */ 137);
+var validation_1 = __webpack_require__(/*! ../core/util/validation */ 12);
+var util_2 = __webpack_require__(/*! @firebase/util */ 0);
+var util_3 = __webpack_require__(/*! @firebase/util */ 0);
+var SyncPoint_1 = __webpack_require__(/*! ../core/SyncPoint */ 67);
+var Reference = /** @class */ (function (_super) {
+    __extends(Reference, _super);
+    /**
+     * Call options:
+     *   new Reference(Repo, Path) or
+     *   new Reference(url: string, string|RepoManager)
+     *
+     * Externally - this is the firebase.database.Reference type.
+     *
+     * @param {!Repo} repo
+     * @param {(!Path)} path
+     * @extends {Query}
+     */
+    function Reference(repo, path) {
+        var _this = this;
+        if (!(repo instanceof Repo_1.Repo)) {
+            throw new Error('new Reference() no longer supported - use app.database().');
+        }
+        // call Query's constructor, passing in the repo and path.
+        _this = _super.call(this, repo, path, QueryParams_1.QueryParams.DEFAULT, false) || this;
+        return _this;
+    }
+    /** @return {?string} */
+    Reference.prototype.getKey = function () {
+        util_2.validateArgCount('Reference.key', 0, 0, arguments.length);
+        if (this.path.isEmpty())
+            return null;
+        else
+            return this.path.getBack();
+    };
+    /**
+     * @param {!(string|Path)} pathString
+     * @return {!Reference}
+     */
+    Reference.prototype.child = function (pathString) {
+        util_2.validateArgCount('Reference.child', 1, 1, arguments.length);
+        if (typeof pathString === 'number') {
+            pathString = String(pathString);
+        }
+        else if (!(pathString instanceof Path_1.Path)) {
+            if (this.path.getFront() === null)
+                validation_1.validateRootPathString('Reference.child', 1, pathString, false);
+            else
+                validation_1.validatePathString('Reference.child', 1, pathString, false);
+        }
+        return new Reference(this.repo, this.path.child(pathString));
+    };
+    /** @return {?Reference} */
+    Reference.prototype.getParent = function () {
+        util_2.validateArgCount('Reference.parent', 0, 0, arguments.length);
+        var parentPath = this.path.parent();
+        return parentPath === null ? null : new Reference(this.repo, parentPath);
+    };
+    /** @return {!Reference} */
+    Reference.prototype.getRoot = function () {
+        util_2.validateArgCount('Reference.root', 0, 0, arguments.length);
+        var ref = this;
+        while (ref.getParent() !== null) {
+            ref = ref.getParent();
+        }
+        return ref;
+    };
+    /** @return {!Database} */
+    Reference.prototype.databaseProp = function () {
+        return this.repo.database;
+    };
+    /**
+     * @param {*} newVal
+     * @param {function(?Error)=} onComplete
+     * @return {!Promise}
+     */
+    Reference.prototype.set = function (newVal, onComplete) {
+        util_2.validateArgCount('Reference.set', 1, 2, arguments.length);
+        validation_1.validateWritablePath('Reference.set', this.path);
+        validation_1.validateFirebaseDataArg('Reference.set', 1, newVal, this.path, false);
+        util_2.validateCallback('Reference.set', 2, onComplete, true);
+        var deferred = new util_3.Deferred();
+        this.repo.setWithPriority(this.path, newVal, 
+        /*priority=*/ null, deferred.wrapCallback(onComplete));
+        return deferred.promise;
+    };
+    /**
+     * @param {!Object} objectToMerge
+     * @param {function(?Error)=} onComplete
+     * @return {!Promise}
+     */
+    Reference.prototype.update = function (objectToMerge, onComplete) {
+        util_2.validateArgCount('Reference.update', 1, 2, arguments.length);
+        validation_1.validateWritablePath('Reference.update', this.path);
+        if (Array.isArray(objectToMerge)) {
+            var newObjectToMerge = {};
+            for (var i = 0; i < objectToMerge.length; ++i) {
+                newObjectToMerge['' + i] = objectToMerge[i];
+            }
+            objectToMerge = newObjectToMerge;
+            util_1.warn('Passing an Array to Firebase.update() is deprecated. ' +
+                'Use set() if you want to overwrite the existing data, or ' +
+                'an Object with integer keys if you really do want to ' +
+                'only update some of the children.');
+        }
+        validation_1.validateFirebaseMergeDataArg('Reference.update', 1, objectToMerge, this.path, false);
+        util_2.validateCallback('Reference.update', 2, onComplete, true);
+        var deferred = new util_3.Deferred();
+        this.repo.update(this.path, objectToMerge, deferred.wrapCallback(onComplete));
+        return deferred.promise;
+    };
+    /**
+     * @param {*} newVal
+     * @param {string|number|null} newPriority
+     * @param {function(?Error)=} onComplete
+     * @return {!Promise}
+     */
+    Reference.prototype.setWithPriority = function (newVal, newPriority, onComplete) {
+        util_2.validateArgCount('Reference.setWithPriority', 2, 3, arguments.length);
+        validation_1.validateWritablePath('Reference.setWithPriority', this.path);
+        validation_1.validateFirebaseDataArg('Reference.setWithPriority', 1, newVal, this.path, false);
+        validation_1.validatePriority('Reference.setWithPriority', 2, newPriority, false);
+        util_2.validateCallback('Reference.setWithPriority', 3, onComplete, true);
+        if (this.getKey() === '.length' || this.getKey() === '.keys')
+            throw 'Reference.setWithPriority failed: ' +
+                this.getKey() +
+                ' is a read-only object.';
+        var deferred = new util_3.Deferred();
+        this.repo.setWithPriority(this.path, newVal, newPriority, deferred.wrapCallback(onComplete));
+        return deferred.promise;
+    };
+    /**
+     * @param {function(?Error)=} onComplete
+     * @return {!Promise}
+     */
+    Reference.prototype.remove = function (onComplete) {
+        util_2.validateArgCount('Reference.remove', 0, 1, arguments.length);
+        validation_1.validateWritablePath('Reference.remove', this.path);
+        util_2.validateCallback('Reference.remove', 1, onComplete, true);
+        return this.set(null, onComplete);
+    };
+    /**
+     * @param {function(*):*} transactionUpdate
+     * @param {(function(?Error, boolean, ?DataSnapshot))=} onComplete
+     * @param {boolean=} applyLocally
+     * @return {!Promise}
+     */
+    Reference.prototype.transaction = function (transactionUpdate, onComplete, applyLocally) {
+        util_2.validateArgCount('Reference.transaction', 1, 3, arguments.length);
+        validation_1.validateWritablePath('Reference.transaction', this.path);
+        util_2.validateCallback('Reference.transaction', 1, transactionUpdate, false);
+        util_2.validateCallback('Reference.transaction', 2, onComplete, true);
+        // NOTE: applyLocally is an internal-only option for now.  We need to decide if we want to keep it and how
+        // to expose it.
+        validation_1.validateBoolean('Reference.transaction', 3, applyLocally, true);
+        if (this.getKey() === '.length' || this.getKey() === '.keys')
+            throw 'Reference.transaction failed: ' +
+                this.getKey() +
+                ' is a read-only object.';
+        if (applyLocally === undefined)
+            applyLocally = true;
+        var deferred = new util_3.Deferred();
+        if (typeof onComplete === 'function') {
+            deferred.promise.catch(function () { });
+        }
+        var promiseComplete = function (error, committed, snapshot) {
+            if (error) {
+                deferred.reject(error);
+            }
+            else {
+                deferred.resolve(new TransactionResult_1.TransactionResult(committed, snapshot));
+            }
+            if (typeof onComplete === 'function') {
+                onComplete(error, committed, snapshot);
+            }
+        };
+        this.repo.startTransaction(this.path, transactionUpdate, promiseComplete, applyLocally);
+        return deferred.promise;
+    };
+    /**
+     * @param {string|number|null} priority
+     * @param {function(?Error)=} onComplete
+     * @return {!Promise}
+     */
+    Reference.prototype.setPriority = function (priority, onComplete) {
+        util_2.validateArgCount('Reference.setPriority', 1, 2, arguments.length);
+        validation_1.validateWritablePath('Reference.setPriority', this.path);
+        validation_1.validatePriority('Reference.setPriority', 1, priority, false);
+        util_2.validateCallback('Reference.setPriority', 2, onComplete, true);
+        var deferred = new util_3.Deferred();
+        this.repo.setWithPriority(this.path.child('.priority'), priority, null, deferred.wrapCallback(onComplete));
+        return deferred.promise;
+    };
+    /**
+     * @param {*=} value
+     * @param {function(?Error)=} onComplete
+     * @return {!Reference}
+     */
+    Reference.prototype.push = function (value, onComplete) {
+        util_2.validateArgCount('Reference.push', 0, 2, arguments.length);
+        validation_1.validateWritablePath('Reference.push', this.path);
+        validation_1.validateFirebaseDataArg('Reference.push', 1, value, this.path, true);
+        util_2.validateCallback('Reference.push', 2, onComplete, true);
+        var now = this.repo.serverTime();
+        var name = NextPushId_1.nextPushId(now);
+        // push() returns a ThennableReference whose promise is fulfilled with a regular Reference.
+        // We use child() to create handles to two different references. The first is turned into a
+        // ThennableReference below by adding then() and catch() methods and is used as the
+        // return value of push(). The second remains a regular Reference and is used as the fulfilled
+        // value of the first ThennableReference.
+        var thennablePushRef = this.child(name);
+        var pushRef = this.child(name);
+        var promise;
+        if (value != null) {
+            promise = thennablePushRef.set(value, onComplete).then(function () { return pushRef; });
+        }
+        else {
+            promise = Promise.resolve(pushRef);
+        }
+        thennablePushRef.then = promise.then.bind(promise);
+        thennablePushRef.catch = promise.then.bind(promise, undefined);
+        if (typeof onComplete === 'function') {
+            promise.catch(function () { });
+        }
+        return thennablePushRef;
+    };
+    /**
+     * @return {!OnDisconnect}
+     */
+    Reference.prototype.onDisconnect = function () {
+        validation_1.validateWritablePath('Reference.onDisconnect', this.path);
+        return new onDisconnect_1.OnDisconnect(this.repo, this.path);
+    };
+    Object.defineProperty(Reference.prototype, "database", {
+        get: function () {
+            return this.databaseProp();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Reference.prototype, "key", {
+        get: function () {
+            return this.getKey();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Reference.prototype, "parent", {
+        get: function () {
+            return this.getParent();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Reference.prototype, "root", {
+        get: function () {
+            return this.getRoot();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Reference;
+}(Query_1.Query));
+exports.Reference = Reference;
+/**
+ * Define reference constructor in various modules
+ *
+ * We are doing this here to avoid several circular
+ * dependency issues
+ */
+Query_1.Query.__referenceConstructor = Reference;
+SyncPoint_1.SyncPoint.__referenceConstructor = Reference;
+
+//# sourceMappingURL=Reference.js.map
+
+
+/***/ }),
+/* 38 */
+/*!**************************************************************************!*\
+  !*** ./node_modules/@firebase/database/dist/cjs/src/api/DataSnapshot.js ***!
+  \**************************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var util_1 = __webpack_require__(/*! @firebase/util */ 0);
+var validation_1 = __webpack_require__(/*! ../core/util/validation */ 12);
+var Path_1 = __webpack_require__(/*! ../core/util/Path */ 2);
+var PriorityIndex_1 = __webpack_require__(/*! ../core/snap/indexes/PriorityIndex */ 6);
+/**
+ * Class representing a firebase data snapshot.  It wraps a SnapshotNode and
+ * surfaces the public methods (val, forEach, etc.) we want to expose.
+ */
+var DataSnapshot = /** @class */ (function () {
+    /**
+     * @param {!Node} node_ A SnapshotNode to wrap.
+     * @param {!Reference} ref_ The ref of the location this snapshot came from.
+     * @param {!Index} index_ The iteration order for this snapshot
+     */
+    function DataSnapshot(node_, ref_, index_) {
+        this.node_ = node_;
+        this.ref_ = ref_;
+        this.index_ = index_;
+    }
+    /**
+     * Retrieves the snapshot contents as JSON.  Returns null if the snapshot is
+     * empty.
+     *
+     * @return {*} JSON representation of the DataSnapshot contents, or null if empty.
+     */
+    DataSnapshot.prototype.val = function () {
+        util_1.validateArgCount('DataSnapshot.val', 0, 0, arguments.length);
+        return this.node_.val();
+    };
+    /**
+     * Returns the snapshot contents as JSON, including priorities of node.  Suitable for exporting
+     * the entire node contents.
+     * @return {*} JSON representation of the DataSnapshot contents, or null if empty.
+     */
+    DataSnapshot.prototype.exportVal = function () {
+        util_1.validateArgCount('DataSnapshot.exportVal', 0, 0, arguments.length);
+        return this.node_.val(true);
+    };
+    // Do not create public documentation. This is intended to make JSON serialization work but is otherwise unnecessary
+    // for end-users
+    DataSnapshot.prototype.toJSON = function () {
+        // Optional spacer argument is unnecessary because we're depending on recursion rather than stringifying the content
+        util_1.validateArgCount('DataSnapshot.toJSON', 0, 1, arguments.length);
+        return this.exportVal();
+    };
+    /**
+     * Returns whether the snapshot contains a non-null value.
+     *
+     * @return {boolean} Whether the snapshot contains a non-null value, or is empty.
+     */
+    DataSnapshot.prototype.exists = function () {
+        util_1.validateArgCount('DataSnapshot.exists', 0, 0, arguments.length);
+        return !this.node_.isEmpty();
+    };
+    /**
+     * Returns a DataSnapshot of the specified child node's contents.
+     *
+     * @param {!string} childPathString Path to a child.
+     * @return {!DataSnapshot} DataSnapshot for child node.
+     */
+    DataSnapshot.prototype.child = function (childPathString) {
+        util_1.validateArgCount('DataSnapshot.child', 0, 1, arguments.length);
+        // Ensure the childPath is a string (can be a number)
+        childPathString = String(childPathString);
+        validation_1.validatePathString('DataSnapshot.child', 1, childPathString, false);
+        var childPath = new Path_1.Path(childPathString);
+        var childRef = this.ref_.child(childPath);
+        return new DataSnapshot(this.node_.getChild(childPath), childRef, PriorityIndex_1.PRIORITY_INDEX);
+    };
+    /**
+     * Returns whether the snapshot contains a child at the specified path.
+     *
+     * @param {!string} childPathString Path to a child.
+     * @return {boolean} Whether the child exists.
+     */
+    DataSnapshot.prototype.hasChild = function (childPathString) {
+        util_1.validateArgCount('DataSnapshot.hasChild', 1, 1, arguments.length);
+        validation_1.validatePathString('DataSnapshot.hasChild', 1, childPathString, false);
+        var childPath = new Path_1.Path(childPathString);
+        return !this.node_.getChild(childPath).isEmpty();
+    };
+    /**
+     * Returns the priority of the object, or null if no priority was set.
+     *
+     * @return {string|number|null} The priority.
+     */
+    DataSnapshot.prototype.getPriority = function () {
+        util_1.validateArgCount('DataSnapshot.getPriority', 0, 0, arguments.length);
+        // typecast here because we never return deferred values or internal priorities (MAX_PRIORITY)
+        return this.node_.getPriority().val();
+    };
+    /**
+     * Iterates through child nodes and calls the specified action for each one.
+     *
+     * @param {function(!DataSnapshot)} action Callback function to be called
+     * for each child.
+     * @return {boolean} True if forEach was canceled by action returning true for
+     * one of the child nodes.
+     */
+    DataSnapshot.prototype.forEach = function (action) {
+        var _this = this;
+        util_1.validateArgCount('DataSnapshot.forEach', 1, 1, arguments.length);
+        util_1.validateCallback('DataSnapshot.forEach', 1, action, false);
+        if (this.node_.isLeafNode())
+            return false;
+        var childrenNode = this.node_;
+        // Sanitize the return value to a boolean. ChildrenNode.forEachChild has a weird return type...
+        return !!childrenNode.forEachChild(this.index_, function (key, node) {
+            return action(new DataSnapshot(node, _this.ref_.child(key), PriorityIndex_1.PRIORITY_INDEX));
+        });
+    };
+    /**
+     * Returns whether this DataSnapshot has children.
+     * @return {boolean} True if the DataSnapshot contains 1 or more child nodes.
+     */
+    DataSnapshot.prototype.hasChildren = function () {
+        util_1.validateArgCount('DataSnapshot.hasChildren', 0, 0, arguments.length);
+        if (this.node_.isLeafNode())
+            return false;
+        else
+            return !this.node_.isEmpty();
+    };
+    Object.defineProperty(DataSnapshot.prototype, "key", {
+        get: function () {
+            return this.ref_.getKey();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Returns the number of children for this DataSnapshot.
+     * @return {number} The number of children that this DataSnapshot contains.
+     */
+    DataSnapshot.prototype.numChildren = function () {
+        util_1.validateArgCount('DataSnapshot.numChildren', 0, 0, arguments.length);
+        return this.node_.numChildren();
+    };
+    /**
+     * @return {Reference} The Firebase reference for the location this snapshot's data came from.
+     */
+    DataSnapshot.prototype.getRef = function () {
+        util_1.validateArgCount('DataSnapshot.ref', 0, 0, arguments.length);
+        return this.ref_;
+    };
+    Object.defineProperty(DataSnapshot.prototype, "ref", {
+        get: function () {
+            return this.getRef();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return DataSnapshot;
+}());
+exports.DataSnapshot = DataSnapshot;
+
+//# sourceMappingURL=DataSnapshot.js.map
+
+
+/***/ }),
+/* 39 */
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@firebase/database/dist/cjs/src/core/util/ImmutableTree.js ***!
+  \*********************************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var SortedMap_1 = __webpack_require__(/*! ./SortedMap */ 27);
+var Path_1 = __webpack_require__(/*! ./Path */ 2);
+var util_1 = __webpack_require__(/*! ./util */ 1);
+var util_2 = __webpack_require__(/*! @firebase/util */ 0);
+var emptyChildrenSingleton;
+/**
+ * Singleton empty children collection.
+ *
+ * @const
+ * @type {!SortedMap.<string, !ImmutableTree.<?>>}
+ */
+var EmptyChildren = function () {
+    if (!emptyChildrenSingleton) {
+        emptyChildrenSingleton = new SortedMap_1.SortedMap(util_1.stringCompare);
+    }
+    return emptyChildrenSingleton;
+};
+/**
+ * A tree with immutable elements.
+ */
+var ImmutableTree = /** @class */ (function () {
+    /**
+     * @template T
+     * @param {?T} value
+     * @param {SortedMap.<string, !ImmutableTree.<T>>=} children
+     */
+    function ImmutableTree(value, children) {
+        if (children === void 0) { children = EmptyChildren(); }
+        this.value = value;
+        this.children = children;
+    }
+    /**
+     * @template T
+     * @param {!Object.<string, !T>} obj
+     * @return {!ImmutableTree.<!T>}
+     */
+    ImmutableTree.fromObject = function (obj) {
+        var tree = ImmutableTree.Empty;
+        util_2.forEach(obj, function (childPath, childSnap) {
+            tree = tree.set(new Path_1.Path(childPath), childSnap);
+        });
+        return tree;
+    };
+    /**
+     * True if the value is empty and there are no children
+     * @return {boolean}
+     */
+    ImmutableTree.prototype.isEmpty = function () {
+        return this.value === null && this.children.isEmpty();
+    };
+    /**
+     * Given a path and predicate, return the first node and the path to that node
+     * where the predicate returns true.
+     *
+     * TODO Do a perf test -- If we're creating a bunch of {path: value:} objects
+     * on the way back out, it may be better to pass down a pathSoFar obj.
+     *
+     * @param {!Path} relativePath The remainder of the path
+     * @param {function(T):boolean} predicate The predicate to satisfy to return a
+     *   node
+     * @return {?{path:!Path, value:!T}}
+     */
+    ImmutableTree.prototype.findRootMostMatchingPathAndValue = function (relativePath, predicate) {
+        if (this.value != null && predicate(this.value)) {
+            return { path: Path_1.Path.Empty, value: this.value };
+        }
+        else {
+            if (relativePath.isEmpty()) {
+                return null;
+            }
+            else {
+                var front = relativePath.getFront();
+                var child = this.children.get(front);
+                if (child !== null) {
+                    var childExistingPathAndValue = child.findRootMostMatchingPathAndValue(relativePath.popFront(), predicate);
+                    if (childExistingPathAndValue != null) {
+                        var fullPath = new Path_1.Path(front).child(childExistingPathAndValue.path);
+                        return { path: fullPath, value: childExistingPathAndValue.value };
+                    }
+                    else {
+                        return null;
+                    }
+                }
+                else {
+                    return null;
+                }
+            }
+        }
+    };
+    /**
+     * Find, if it exists, the shortest subpath of the given path that points a defined
+     * value in the tree
+     * @param {!Path} relativePath
+     * @return {?{path: !Path, value: !T}}
+     */
+    ImmutableTree.prototype.findRootMostValueAndPath = function (relativePath) {
+        return this.findRootMostMatchingPathAndValue(relativePath, function () { return true; });
+    };
+    /**
+     * @param {!Path} relativePath
+     * @return {!ImmutableTree.<T>} The subtree at the given path
+     */
+    ImmutableTree.prototype.subtree = function (relativePath) {
+        if (relativePath.isEmpty()) {
+            return this;
+        }
+        else {
+            var front = relativePath.getFront();
+            var childTree = this.children.get(front);
+            if (childTree !== null) {
+                return childTree.subtree(relativePath.popFront());
+            }
+            else {
+                return ImmutableTree.Empty;
+            }
+        }
+    };
+    /**
+     * Sets a value at the specified path.
+     *
+     * @param {!Path} relativePath Path to set value at.
+     * @param {?T} toSet Value to set.
+     * @return {!ImmutableTree.<T>} Resulting tree.
+     */
+    ImmutableTree.prototype.set = function (relativePath, toSet) {
+        if (relativePath.isEmpty()) {
+            return new ImmutableTree(toSet, this.children);
+        }
+        else {
+            var front = relativePath.getFront();
+            var child = this.children.get(front) || ImmutableTree.Empty;
+            var newChild = child.set(relativePath.popFront(), toSet);
+            var newChildren = this.children.insert(front, newChild);
+            return new ImmutableTree(this.value, newChildren);
+        }
+    };
+    /**
+     * Removes the value at the specified path.
+     *
+     * @param {!Path} relativePath Path to value to remove.
+     * @return {!ImmutableTree.<T>} Resulting tree.
+     */
+    ImmutableTree.prototype.remove = function (relativePath) {
+        if (relativePath.isEmpty()) {
+            if (this.children.isEmpty()) {
+                return ImmutableTree.Empty;
+            }
+            else {
+                return new ImmutableTree(null, this.children);
+            }
+        }
+        else {
+            var front = relativePath.getFront();
+            var child = this.children.get(front);
+            if (child) {
+                var newChild = child.remove(relativePath.popFront());
+                var newChildren = void 0;
+                if (newChild.isEmpty()) {
+                    newChildren = this.children.remove(front);
+                }
+                else {
+                    newChildren = this.children.insert(front, newChild);
+                }
+                if (this.value === null && newChildren.isEmpty()) {
+                    return ImmutableTree.Empty;
+                }
+                else {
+                    return new ImmutableTree(this.value, newChildren);
+                }
+            }
+            else {
+                return this;
+            }
+        }
+    };
+    /**
+     * Gets a value from the tree.
+     *
+     * @param {!Path} relativePath Path to get value for.
+     * @return {?T} Value at path, or null.
+     */
+    ImmutableTree.prototype.get = function (relativePath) {
+        if (relativePath.isEmpty()) {
+            return this.value;
+        }
+        else {
+            var front = relativePath.getFront();
+            var child = this.children.get(front);
+            if (child) {
+                return child.get(relativePath.popFront());
+            }
+            else {
+                return null;
+            }
+        }
+    };
+    /**
+     * Replace the subtree at the specified path with the given new tree.
+     *
+     * @param {!Path} relativePath Path to replace subtree for.
+     * @param {!ImmutableTree} newTree New tree.
+     * @return {!ImmutableTree} Resulting tree.
+     */
+    ImmutableTree.prototype.setTree = function (relativePath, newTree) {
+        if (relativePath.isEmpty()) {
+            return newTree;
+        }
+        else {
+            var front = relativePath.getFront();
+            var child = this.children.get(front) || ImmutableTree.Empty;
+            var newChild = child.setTree(relativePath.popFront(), newTree);
+            var newChildren = void 0;
+            if (newChild.isEmpty()) {
+                newChildren = this.children.remove(front);
+            }
+            else {
+                newChildren = this.children.insert(front, newChild);
+            }
+            return new ImmutableTree(this.value, newChildren);
+        }
+    };
+    /**
+     * Performs a depth first fold on this tree. Transforms a tree into a single
+     * value, given a function that operates on the path to a node, an optional
+     * current value, and a map of child names to folded subtrees
+     * @template V
+     * @param {function(Path, ?T, Object.<string, V>):V} fn
+     * @return {V}
+     */
+    ImmutableTree.prototype.fold = function (fn) {
+        return this.fold_(Path_1.Path.Empty, fn);
+    };
+    /**
+     * Recursive helper for public-facing fold() method
+     * @template V
+     * @param {!Path} pathSoFar
+     * @param {function(Path, ?T, Object.<string, V>):V} fn
+     * @return {V}
+     * @private
+     */
+    ImmutableTree.prototype.fold_ = function (pathSoFar, fn) {
+        var accum = {};
+        this.children.inorderTraversal(function (childKey, childTree) {
+            accum[childKey] = childTree.fold_(pathSoFar.child(childKey), fn);
+        });
+        return fn(pathSoFar, this.value, accum);
+    };
+    /**
+     * Find the first matching value on the given path. Return the result of applying f to it.
+     * @template V
+     * @param {!Path} path
+     * @param {!function(!Path, !T):?V} f
+     * @return {?V}
+     */
+    ImmutableTree.prototype.findOnPath = function (path, f) {
+        return this.findOnPath_(path, Path_1.Path.Empty, f);
+    };
+    ImmutableTree.prototype.findOnPath_ = function (pathToFollow, pathSoFar, f) {
+        var result = this.value ? f(pathSoFar, this.value) : false;
+        if (result) {
+            return result;
+        }
+        else {
+            if (pathToFollow.isEmpty()) {
+                return null;
+            }
+            else {
+                var front = pathToFollow.getFront();
+                var nextChild = this.children.get(front);
+                if (nextChild) {
+                    return nextChild.findOnPath_(pathToFollow.popFront(), pathSoFar.child(front), f);
+                }
+                else {
+                    return null;
+                }
+            }
+        }
+    };
+    /**
+     *
+     * @param {!Path} path
+     * @param {!function(!Path, !T)} f
+     * @returns {!ImmutableTree.<T>}
+     */
+    ImmutableTree.prototype.foreachOnPath = function (path, f) {
+        return this.foreachOnPath_(path, Path_1.Path.Empty, f);
+    };
+    ImmutableTree.prototype.foreachOnPath_ = function (pathToFollow, currentRelativePath, f) {
+        if (pathToFollow.isEmpty()) {
+            return this;
+        }
+        else {
+            if (this.value) {
+                f(currentRelativePath, this.value);
+            }
+            var front = pathToFollow.getFront();
+            var nextChild = this.children.get(front);
+            if (nextChild) {
+                return nextChild.foreachOnPath_(pathToFollow.popFront(), currentRelativePath.child(front), f);
+            }
+            else {
+                return ImmutableTree.Empty;
+            }
+        }
+    };
+    /**
+     * Calls the given function for each node in the tree that has a value.
+     *
+     * @param {function(!Path, !T)} f A function to be called with
+     *   the path from the root of the tree to a node, and the value at that node.
+     *   Called in depth-first order.
+     */
+    ImmutableTree.prototype.foreach = function (f) {
+        this.foreach_(Path_1.Path.Empty, f);
+    };
+    ImmutableTree.prototype.foreach_ = function (currentRelativePath, f) {
+        this.children.inorderTraversal(function (childName, childTree) {
+            childTree.foreach_(currentRelativePath.child(childName), f);
+        });
+        if (this.value) {
+            f(currentRelativePath, this.value);
+        }
+    };
+    /**
+     *
+     * @param {function(string, !T)} f
+     */
+    ImmutableTree.prototype.foreachChild = function (f) {
+        this.children.inorderTraversal(function (childName, childTree) {
+            if (childTree.value) {
+                f(childName, childTree.value);
+            }
+        });
+    };
+    ImmutableTree.Empty = new ImmutableTree(null);
+    return ImmutableTree;
+}());
+exports.ImmutableTree = ImmutableTree;
+
+//# sourceMappingURL=ImmutableTree.js.map
+
+
+/***/ }),
+/* 40 */
+/*!****************************************************************************************!*\
+  !*** ./node_modules/@firebase/database/dist/cjs/src/core/view/filter/IndexedFilter.js ***!
+  \****************************************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var util_1 = __webpack_require__(/*! @firebase/util */ 0);
+var Change_1 = __webpack_require__(/*! ../Change */ 17);
+var ChildrenNode_1 = __webpack_require__(/*! ../../snap/ChildrenNode */ 7);
+var PriorityIndex_1 = __webpack_require__(/*! ../../snap/indexes/PriorityIndex */ 6);
+/**
+ * Doesn't really filter nodes but applies an index to the node and keeps track of any changes
+ *
+ * @constructor
+ * @implements {NodeFilter}
+ * @param {!Index} index
+ */
+var IndexedFilter = /** @class */ (function () {
+    function IndexedFilter(index_) {
+        this.index_ = index_;
+    }
+    IndexedFilter.prototype.updateChild = function (snap, key, newChild, affectedPath, source, optChangeAccumulator) {
+        util_1.assert(snap.isIndexed(this.index_), 'A node must be indexed if only a child is updated');
+        var oldChild = snap.getImmediateChild(key);
+        // Check if anything actually changed.
+        if (oldChild.getChild(affectedPath).equals(newChild.getChild(affectedPath))) {
+            // There's an edge case where a child can enter or leave the view because affectedPath was set to null.
+            // In this case, affectedPath will appear null in both the old and new snapshots.  So we need
+            // to avoid treating these cases as "nothing changed."
+            if (oldChild.isEmpty() == newChild.isEmpty()) {
+                // Nothing changed.
+                // This assert should be valid, but it's expensive (can dominate perf testing) so don't actually do it.
+                //assert(oldChild.equals(newChild), 'Old and new snapshots should be equal.');
+                return snap;
+            }
+        }
+        if (optChangeAccumulator != null) {
+            if (newChild.isEmpty()) {
+                if (snap.hasChild(key)) {
+                    optChangeAccumulator.trackChildChange(Change_1.Change.childRemovedChange(key, oldChild));
+                }
+                else {
+                    util_1.assert(snap.isLeafNode(), 'A child remove without an old child only makes sense on a leaf node');
+                }
+            }
+            else if (oldChild.isEmpty()) {
+                optChangeAccumulator.trackChildChange(Change_1.Change.childAddedChange(key, newChild));
+            }
+            else {
+                optChangeAccumulator.trackChildChange(Change_1.Change.childChangedChange(key, newChild, oldChild));
+            }
+        }
+        if (snap.isLeafNode() && newChild.isEmpty()) {
+            return snap;
+        }
+        else {
+            // Make sure the node is indexed
+            return snap.updateImmediateChild(key, newChild).withIndex(this.index_);
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    IndexedFilter.prototype.updateFullNode = function (oldSnap, newSnap, optChangeAccumulator) {
+        if (optChangeAccumulator != null) {
+            if (!oldSnap.isLeafNode()) {
+                oldSnap.forEachChild(PriorityIndex_1.PRIORITY_INDEX, function (key, childNode) {
+                    if (!newSnap.hasChild(key)) {
+                        optChangeAccumulator.trackChildChange(Change_1.Change.childRemovedChange(key, childNode));
+                    }
+                });
+            }
+            if (!newSnap.isLeafNode()) {
+                newSnap.forEachChild(PriorityIndex_1.PRIORITY_INDEX, function (key, childNode) {
+                    if (oldSnap.hasChild(key)) {
+                        var oldChild = oldSnap.getImmediateChild(key);
+                        if (!oldChild.equals(childNode)) {
+                            optChangeAccumulator.trackChildChange(Change_1.Change.childChangedChange(key, childNode, oldChild));
+                        }
+                    }
+                    else {
+                        optChangeAccumulator.trackChildChange(Change_1.Change.childAddedChange(key, childNode));
+                    }
+                });
+            }
+        }
+        return newSnap.withIndex(this.index_);
+    };
+    /**
+     * @inheritDoc
+     */
+    IndexedFilter.prototype.updatePriority = function (oldSnap, newPriority) {
+        if (oldSnap.isEmpty()) {
+            return ChildrenNode_1.ChildrenNode.EMPTY_NODE;
+        }
+        else {
+            return oldSnap.updatePriority(newPriority);
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    IndexedFilter.prototype.filtersNodes = function () {
+        return false;
+    };
+    /**
+     * @inheritDoc
+     */
+    IndexedFilter.prototype.getIndexedFilter = function () {
+        return this;
+    };
+    /**
+     * @inheritDoc
+     */
+    IndexedFilter.prototype.getIndex = function () {
+        return this.index_;
+    };
+    return IndexedFilter;
+}());
+exports.IndexedFilter = IndexedFilter;
+
+//# sourceMappingURL=IndexedFilter.js.map
+
+
+/***/ }),
+/* 41 */
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@firebase/database/dist/cjs/src/core/stats/StatsManager.js ***!
+  \*********************************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var StatsCollection_1 = __webpack_require__(/*! ./StatsCollection */ 129);
+var StatsManager = /** @class */ (function () {
+    function StatsManager() {
+    }
+    StatsManager.getCollection = function (repoInfo) {
+        var hashString = repoInfo.toString();
+        if (!this.collections_[hashString]) {
+            this.collections_[hashString] = new StatsCollection_1.StatsCollection();
+        }
+        return this.collections_[hashString];
+    };
+    StatsManager.getOrCreateReporter = function (repoInfo, creatorFunction) {
+        var hashString = repoInfo.toString();
+        if (!this.reporters_[hashString]) {
+            this.reporters_[hashString] = creatorFunction();
+        }
+        return this.reporters_[hashString];
+    };
+    StatsManager.collections_ = {};
+    StatsManager.reporters_ = {};
+    return StatsManager;
+}());
+exports.StatsManager = StatsManager;
+
+//# sourceMappingURL=StatsManager.js.map
+
+
+/***/ }),
+/* 42 */
+/*!**************************************************************************!*\
+  !*** ./node_modules/@firebase/database/dist/cjs/src/core/RepoManager.js ***!
+  \**************************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var util_1 = __webpack_require__(/*! @firebase/util */ 0);
+var Repo_1 = __webpack_require__(/*! ./Repo */ 28);
+var util_2 = __webpack_require__(/*! ./util/util */ 1);
+var parser_1 = __webpack_require__(/*! ./util/libs/parser */ 53);
+var validation_1 = __webpack_require__(/*! ./util/validation */ 12);
+__webpack_require__(/*! ./Repo_transaction */ 139);
+/** @const {string} */
+var DATABASE_URL_OPTION = 'databaseURL';
+var _staticInstance;
+/**
+ * Creates and caches Repo instances.
+ */
+var RepoManager = /** @class */ (function () {
+    function RepoManager() {
+        /**
+         * @private {!Object.<string, Object<string, !fb.core.Repo>>}
+         */
+        this.repos_ = {};
+        /**
+         * If true, new Repos will be created to use ReadonlyRestClient (for testing purposes).
+         * @private {boolean}
+         */
+        this.useRestClient_ = false;
+    }
+    RepoManager.getInstance = function () {
+        if (!_staticInstance) {
+            _staticInstance = new RepoManager();
+        }
+        return _staticInstance;
+    };
+    // TODO(koss): Remove these functions unless used in tests?
+    RepoManager.prototype.interrupt = function () {
+        for (var appName in this.repos_) {
+            for (var dbUrl in this.repos_[appName]) {
+                this.repos_[appName][dbUrl].interrupt();
+            }
+        }
+    };
+    RepoManager.prototype.resume = function () {
+        for (var appName in this.repos_) {
+            for (var dbUrl in this.repos_[appName]) {
+                this.repos_[appName][dbUrl].resume();
+            }
+        }
+    };
+    /**
+     * This function should only ever be called to CREATE a new database instance.
+     *
+     * @param {!FirebaseApp} app
+     * @return {!Database}
+     */
+    RepoManager.prototype.databaseFromApp = function (app, url) {
+        var dbUrl = url || app.options[DATABASE_URL_OPTION];
+        if (dbUrl === undefined) {
+            util_2.fatal("Can't determine Firebase Database URL.  Be sure to include " +
+                DATABASE_URL_OPTION +
+                ' option when calling firebase.initializeApp().');
+        }
+        var parsedUrl = parser_1.parseRepoInfo(dbUrl);
+        var repoInfo = parsedUrl.repoInfo;
+        validation_1.validateUrl('Invalid Firebase Database URL', 1, parsedUrl);
+        if (!parsedUrl.path.isEmpty()) {
+            util_2.fatal('Database URL must point to the root of a Firebase Database ' +
+                '(not including a child path).');
+        }
+        var repo = this.createRepo(repoInfo, app);
+        return repo.database;
+    };
+    /**
+     * Remove the repo and make sure it is disconnected.
+     *
+     * @param {!Repo} repo
+     */
+    RepoManager.prototype.deleteRepo = function (repo) {
+        var appRepos = util_1.safeGet(this.repos_, repo.app.name);
+        // This should never happen...
+        if (!appRepos || util_1.safeGet(appRepos, repo.repoInfo_.toURLString()) !== repo) {
+            util_2.fatal("Database " + repo.app.name + "(" + repo.repoInfo_ + ") has already been deleted.");
+        }
+        repo.interrupt();
+        delete appRepos[repo.repoInfo_.toURLString()];
+    };
+    /**
+     * Ensures a repo doesn't already exist and then creates one using the
+     * provided app.
+     *
+     * @param {!RepoInfo} repoInfo The metadata about the Repo
+     * @param {!FirebaseApp} app
+     * @return {!Repo} The Repo object for the specified server / repoName.
+     */
+    RepoManager.prototype.createRepo = function (repoInfo, app) {
+        var appRepos = util_1.safeGet(this.repos_, app.name);
+        if (!appRepos) {
+            appRepos = {};
+            this.repos_[app.name] = appRepos;
+        }
+        var repo = util_1.safeGet(appRepos, repoInfo.toURLString());
+        if (repo) {
+            util_2.fatal('Database initialized multiple times. Please make sure the format of the database URL matches with each database() call.');
+        }
+        repo = new Repo_1.Repo(repoInfo, this.useRestClient_, app);
+        appRepos[repoInfo.toURLString()] = repo;
+        return repo;
+    };
+    /**
+     * Forces us to use ReadonlyRestClient instead of PersistentConnection for new Repos.
+     * @param {boolean} forceRestClient
+     */
+    RepoManager.prototype.forceRestClient = function (forceRestClient) {
+        this.useRestClient_ = forceRestClient;
+    };
+    return RepoManager;
+}());
+exports.RepoManager = RepoManager;
+
+//# sourceMappingURL=RepoManager.js.map
+
+
+/***/ }),
+/* 43 */
+/*!****************************************************************************!*\
+  !*** ./node_modules/@firebase/storage/dist/esm/src/implementation/args.js ***!
+  \****************************************************************************/
+/*! exports provided: validate, ArgSpec, and_, stringSpec, uploadDataSpec, metadataSpec, nonNegativeNumberSpec, looseObjectSpec, nullFunctionSpec */
+/*! exports used: looseObjectSpec, metadataSpec, nonNegativeNumberSpec, nullFunctionSpec, stringSpec, uploadDataSpec, validate */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["g"] = validate;
+/* unused harmony export ArgSpec */
+/* unused harmony export and_ */
+/* harmony export (immutable) */ __webpack_exports__["e"] = stringSpec;
+/* harmony export (immutable) */ __webpack_exports__["f"] = uploadDataSpec;
+/* harmony export (immutable) */ __webpack_exports__["b"] = metadataSpec;
+/* harmony export (immutable) */ __webpack_exports__["c"] = nonNegativeNumberSpec;
+/* harmony export (immutable) */ __webpack_exports__["a"] = looseObjectSpec;
+/* harmony export (immutable) */ __webpack_exports__["d"] = nullFunctionSpec;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__error__ = __webpack_require__(/*! ./error */ 10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__metadata__ = __webpack_require__(/*! ./metadata */ 44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__type__ = __webpack_require__(/*! ./type */ 9);
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+/**
+ * @param name Name of the function.
+ * @param specs Argument specs.
+ * @param passed The actual arguments passed to the function.
+ * @throws {fbs.Error} If the arguments are invalid.
+ */
+function validate(name, specs, passed) {
+    var minArgs = specs.length;
+    var maxArgs = specs.length;
+    for (var i = 0; i < specs.length; i++) {
+        if (specs[i].optional) {
+            minArgs = i;
+            break;
+        }
+    }
+    var validLength = minArgs <= passed.length && passed.length <= maxArgs;
+    if (!validLength) {
+        throw __WEBPACK_IMPORTED_MODULE_0__error__["g" /* invalidArgumentCount */](minArgs, maxArgs, name, passed.length);
+    }
+    for (var i = 0; i < passed.length; i++) {
+        try {
+            specs[i].validator(passed[i]);
+        }
+        catch (e) {
+            if (e instanceof Error) {
+                throw __WEBPACK_IMPORTED_MODULE_0__error__["f" /* invalidArgument */](i, name, e.message);
+            }
+            else {
+                throw __WEBPACK_IMPORTED_MODULE_0__error__["f" /* invalidArgument */](i, name, e);
+            }
+        }
+    }
+}
+/**
+ * @struct
+ */
+var ArgSpec = /** @class */ (function () {
+    function ArgSpec(validator, opt_optional) {
+        var self = this;
+        this.validator = function (p) {
+            if (self.optional && !__WEBPACK_IMPORTED_MODULE_2__type__["c" /* isJustDef */](p)) {
+                return;
+            }
+            validator(p);
+        };
+        this.optional = !!opt_optional;
+    }
+    return ArgSpec;
+}());
+
+function and_(v1, v2) {
+    return function (p) {
+        v1(p);
+        v2(p);
+    };
+}
+function stringSpec(opt_validator, opt_optional) {
+    function stringValidator(p) {
+        if (!__WEBPACK_IMPORTED_MODULE_2__type__["j" /* isString */](p)) {
+            throw 'Expected string.';
+        }
+    }
+    var validator;
+    if (opt_validator) {
+        validator = and_(stringValidator, opt_validator);
+    }
+    else {
+        validator = stringValidator;
+    }
+    return new ArgSpec(validator, opt_optional);
+}
+function uploadDataSpec() {
+    function validator(p) {
+        var valid = p instanceof Uint8Array ||
+            p instanceof ArrayBuffer ||
+            (__WEBPACK_IMPORTED_MODULE_2__type__["e" /* isNativeBlobDefined */]() && p instanceof Blob);
+        if (!valid) {
+            throw 'Expected Blob or File.';
+        }
+    }
+    return new ArgSpec(validator);
+}
+function metadataSpec(opt_optional) {
+    return new ArgSpec(__WEBPACK_IMPORTED_MODULE_1__metadata__["c" /* metadataValidator */], opt_optional);
+}
+function nonNegativeNumberSpec() {
+    function validator(p) {
+        var valid = __WEBPACK_IMPORTED_MODULE_2__type__["h" /* isNumber */](p) && p >= 0;
+        if (!valid) {
+            throw 'Expected a number 0 or greater.';
+        }
+    }
+    return new ArgSpec(validator);
+}
+function looseObjectSpec(opt_validator, opt_optional) {
+    function validator(p) {
+        var isLooseObject = p === null || (__WEBPACK_IMPORTED_MODULE_2__type__["a" /* isDef */](p) && p instanceof Object);
+        if (!isLooseObject) {
+            throw 'Expected an Object.';
+        }
+        if (opt_validator !== undefined && opt_validator !== null) {
+            opt_validator(p);
+        }
+    }
+    return new ArgSpec(validator, opt_optional);
+}
+function nullFunctionSpec(opt_optional) {
+    function validator(p) {
+        var valid = p === null || __WEBPACK_IMPORTED_MODULE_2__type__["b" /* isFunction */](p);
+        if (!valid) {
+            throw 'Expected a Function.';
+        }
+    }
+    return new ArgSpec(validator, opt_optional);
+}
+
+//# sourceMappingURL=args.js.map
+
+
+/***/ }),
+/* 44 */
+/*!********************************************************************************!*\
+  !*** ./node_modules/@firebase/storage/dist/esm/src/implementation/metadata.js ***!
+  \********************************************************************************/
+/*! exports provided: noXform_, Mapping, xformPath, getMappings, addRef, fromResource, fromResourceString, toResourceString, metadataValidator */
+/*! exports used: fromResourceString, getMappings, metadataValidator, toResourceString */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export noXform_ */
+/* unused harmony export Mapping */
+/* unused harmony export xformPath */
+/* harmony export (immutable) */ __webpack_exports__["b"] = getMappings;
+/* unused harmony export addRef */
+/* unused harmony export fromResource */
+/* harmony export (immutable) */ __webpack_exports__["a"] = fromResourceString;
+/* harmony export (immutable) */ __webpack_exports__["d"] = toResourceString;
+/* harmony export (immutable) */ __webpack_exports__["c"] = metadataValidator;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__json__ = __webpack_require__(/*! ./json */ 154);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__location__ = __webpack_require__(/*! ./location */ 32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__path__ = __webpack_require__(/*! ./path */ 83);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__type__ = __webpack_require__(/*! ./type */ 9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__url__ = __webpack_require__(/*! ./url */ 45);
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+
+
+function noXform_(metadata, value) {
+    return value;
+}
+/**
+ * @struct
+ */
+var Mapping = /** @class */ (function () {
+    function Mapping(server, opt_local, opt_writable, opt_xform) {
+        this.server = server;
+        this.local = opt_local || server;
+        this.writable = !!opt_writable;
+        this.xform = opt_xform || noXform_;
+    }
+    return Mapping;
+}());
+
+var mappings_ = null;
+function xformPath(fullPath) {
+    var valid = __WEBPACK_IMPORTED_MODULE_3__type__["j" /* isString */](fullPath);
+    if (!valid || fullPath.length < 2) {
+        return fullPath;
+    }
+    else {
+        fullPath = fullPath;
+        return __WEBPACK_IMPORTED_MODULE_2__path__["b" /* lastComponent */](fullPath);
+    }
+}
+function getMappings() {
+    if (mappings_) {
+        return mappings_;
+    }
+    var mappings = [];
+    mappings.push(new Mapping('bucket'));
+    mappings.push(new Mapping('generation'));
+    mappings.push(new Mapping('metageneration'));
+    mappings.push(new Mapping('name', 'fullPath', true));
+    function mappingsXformPath(metadata, fullPath) {
+        return xformPath(fullPath);
+    }
+    var nameMapping = new Mapping('name');
+    nameMapping.xform = mappingsXformPath;
+    mappings.push(nameMapping);
+    /**
+     * Coerces the second param to a number, if it is defined.
+     */
+    function xformSize(metadata, size) {
+        if (__WEBPACK_IMPORTED_MODULE_3__type__["a" /* isDef */](size)) {
+            return +size;
+        }
+        else {
+            return size;
+        }
+    }
+    var sizeMapping = new Mapping('size');
+    sizeMapping.xform = xformSize;
+    mappings.push(sizeMapping);
+    mappings.push(new Mapping('timeCreated'));
+    mappings.push(new Mapping('updated'));
+    mappings.push(new Mapping('md5Hash', null, true));
+    mappings.push(new Mapping('cacheControl', null, true));
+    mappings.push(new Mapping('contentDisposition', null, true));
+    mappings.push(new Mapping('contentEncoding', null, true));
+    mappings.push(new Mapping('contentLanguage', null, true));
+    mappings.push(new Mapping('contentType', null, true));
+    mappings.push(new Mapping('metadata', 'customMetadata', true));
+    /**
+     * Transforms a comma-separated string of tokens into a list of download
+     * URLs.
+     */
+    function xformTokens(metadata, tokens) {
+        var valid = __WEBPACK_IMPORTED_MODULE_3__type__["j" /* isString */](tokens) && tokens.length > 0;
+        if (!valid) {
+            // This can happen if objects are uploaded through GCS and retrieved
+            // through list, so we don't want to throw an Error.
+            return [];
+        }
+        var encode = encodeURIComponent;
+        var tokensList = tokens.split(',');
+        var urls = tokensList.map(function (token) {
+            var bucket = metadata['bucket'];
+            var path = metadata['fullPath'];
+            var urlPart = '/b/' + encode(bucket) + '/o/' + encode(path);
+            var base = __WEBPACK_IMPORTED_MODULE_4__url__["a" /* makeDownloadUrl */](urlPart);
+            var queryString = __WEBPACK_IMPORTED_MODULE_4__url__["c" /* makeQueryString */]({
+                alt: 'media',
+                token: token
+            });
+            return base + queryString;
+        });
+        return urls;
+    }
+    mappings.push(new Mapping('downloadTokens', 'downloadURLs', false, xformTokens));
+    mappings_ = mappings;
+    return mappings_;
+}
+function addRef(metadata, authWrapper) {
+    function generateRef() {
+        var bucket = metadata['bucket'];
+        var path = metadata['fullPath'];
+        var loc = new __WEBPACK_IMPORTED_MODULE_1__location__["a" /* Location */](bucket, path);
+        return authWrapper.makeStorageReference(loc);
+    }
+    Object.defineProperty(metadata, 'ref', { get: generateRef });
+}
+function fromResource(authWrapper, resource, mappings) {
+    var metadata = {};
+    metadata['type'] = 'file';
+    var len = mappings.length;
+    for (var i = 0; i < len; i++) {
+        var mapping = mappings[i];
+        metadata[mapping.local] = mapping.xform(metadata, resource[mapping.server]);
+    }
+    addRef(metadata, authWrapper);
+    return metadata;
+}
+function fromResourceString(authWrapper, resourceString, mappings) {
+    var obj = __WEBPACK_IMPORTED_MODULE_0__json__["a" /* jsonObjectOrNull */](resourceString);
+    if (obj === null) {
+        return null;
+    }
+    var resource = obj;
+    return fromResource(authWrapper, resource, mappings);
+}
+function toResourceString(metadata, mappings) {
+    var resource = {};
+    var len = mappings.length;
+    for (var i = 0; i < len; i++) {
+        var mapping = mappings[i];
+        if (mapping.writable) {
+            resource[mapping.server] = metadata[mapping.local];
+        }
+    }
+    return JSON.stringify(resource);
+}
+function metadataValidator(p) {
+    var validType = p && __WEBPACK_IMPORTED_MODULE_3__type__["i" /* isObject */](p);
+    if (!validType) {
+        throw 'Expected Metadata object.';
+    }
+    for (var key in p) {
+        var val = p[key];
+        if (key === 'customMetadata') {
+            if (!__WEBPACK_IMPORTED_MODULE_3__type__["i" /* isObject */](val)) {
+                throw 'Expected object for \'customMetadata\' mapping.';
+            }
+        }
+        else {
+            if (__WEBPACK_IMPORTED_MODULE_3__type__["g" /* isNonNullObject */](val)) {
+                throw "Mapping for '" + key + "' cannot be an object.";
+            }
+        }
+    }
+}
+
+//# sourceMappingURL=metadata.js.map
+
+
+/***/ }),
+/* 45 */
+/*!***************************************************************************!*\
+  !*** ./node_modules/@firebase/storage/dist/esm/src/implementation/url.js ***!
+  \***************************************************************************/
+/*! exports provided: makeNormalUrl, makeDownloadUrl, makeUploadUrl, makeQueryString */
+/*! exports used: makeDownloadUrl, makeNormalUrl, makeQueryString, makeUploadUrl */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["b"] = makeNormalUrl;
+/* harmony export (immutable) */ __webpack_exports__["a"] = makeDownloadUrl;
+/* harmony export (immutable) */ __webpack_exports__["d"] = makeUploadUrl;
+/* harmony export (immutable) */ __webpack_exports__["c"] = makeQueryString;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(/*! ./constants */ 31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__object__ = __webpack_require__(/*! ./object */ 18);
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @fileoverview Functions to create and manipulate URLs for the server API.
+ */
+
+
+function makeNormalUrl(urlPart) {
+    return __WEBPACK_IMPORTED_MODULE_0__constants__["f" /* domainBase */] + __WEBPACK_IMPORTED_MODULE_0__constants__["a" /* apiBaseUrl */] + urlPart;
+}
+function makeDownloadUrl(urlPart) {
+    return __WEBPACK_IMPORTED_MODULE_0__constants__["g" /* downloadBase */] + __WEBPACK_IMPORTED_MODULE_0__constants__["a" /* apiBaseUrl */] + urlPart;
+}
+function makeUploadUrl(urlPart) {
+    return __WEBPACK_IMPORTED_MODULE_0__constants__["f" /* domainBase */] + __WEBPACK_IMPORTED_MODULE_0__constants__["b" /* apiUploadBaseUrl */] + urlPart;
+}
+function makeQueryString(params) {
+    var encode = encodeURIComponent;
+    var queryPart = '?';
+    __WEBPACK_IMPORTED_MODULE_1__object__["b" /* forEach */](params, function (key, val) {
+        var nextPart = encode(key) + '=' + encode(val);
+        queryPart = queryPart + nextPart + '&';
+    });
+    // Chop off the extra '&' or '?' on the end
+    queryPart = queryPart.slice(0, -1);
+    return queryPart;
+}
+
+//# sourceMappingURL=url.js.map
+
+
+/***/ }),
+/* 46 */
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@firebase/storage/dist/esm/src/implementation/array.js ***!
+  \*****************************************************************************/
+/*! exports provided: contains, clone, remove */
+/*! exports used: clone, contains, remove */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["b"] = contains;
+/* harmony export (immutable) */ __webpack_exports__["a"] = clone;
+/* harmony export (immutable) */ __webpack_exports__["c"] = remove;
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Returns true if the object is contained in the array (compared with ===).
+ * @template T
+ */
+function contains(array, elem) {
+    return array.indexOf(elem) !== -1;
+}
+/**
+ * Returns a shallow copy of the array or array-like object (e.g. arguments).
+ * @template T
+ */
+function clone(arraylike) {
+    return Array.prototype.slice.call(arraylike);
+}
+/**
+ * Removes the given element from the given array, if it is contained.
+ * Directly modifies the passed-in array.
+ * @template T
+ */
+function remove(array, elem) {
+    var i = array.indexOf(elem);
+    if (i !== -1) {
+        array.splice(i, 1);
+    }
+}
+
+//# sourceMappingURL=array.js.map
+
+
+/***/ }),
 /* 47 */
 /*!************************************************!*\
   !*** ./node_modules/timers-browserify/main.js ***!
@@ -18807,7 +18807,7 @@ exports.clearImmediate = clearImmediate;
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var constants_1 = __webpack_require__(/*! ./constants */ 35);
+var constants_1 = __webpack_require__(/*! ./constants */ 36);
 /**
  * Throws an error if the provided assertion is falsy
  * @param {*} assertion The assertion to be tested for falsiness
@@ -19383,9 +19383,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = __webpack_require__(/*! ../core/util/util */ 1);
 var parser_1 = __webpack_require__(/*! ../core/util/libs/parser */ 53);
 var Path_1 = __webpack_require__(/*! ../core/util/Path */ 2);
-var Reference_1 = __webpack_require__(/*! ./Reference */ 36);
+var Reference_1 = __webpack_require__(/*! ./Reference */ 37);
 var Repo_1 = __webpack_require__(/*! ../core/Repo */ 28);
-var RepoManager_1 = __webpack_require__(/*! ../core/RepoManager */ 41);
+var RepoManager_1 = __webpack_require__(/*! ../core/RepoManager */ 42);
 var util_2 = __webpack_require__(/*! @firebase/util */ 0);
 var validation_1 = __webpack_require__(/*! ../core/util/validation */ 12);
 /**
@@ -23401,7 +23401,7 @@ exports.Connection = Connection;
 Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = __webpack_require__(/*! ../core/util/util */ 1);
 var CountedSet_1 = __webpack_require__(/*! ../core/util/CountedSet */ 65);
-var StatsManager_1 = __webpack_require__(/*! ../core/stats/StatsManager */ 40);
+var StatsManager_1 = __webpack_require__(/*! ../core/stats/StatsManager */ 41);
 var PacketReceiver_1 = __webpack_require__(/*! ./polling/PacketReceiver */ 135);
 var Constants_1 = __webpack_require__(/*! ./Constants */ 24);
 var util_2 = __webpack_require__(/*! @firebase/util */ 0);
@@ -24043,7 +24043,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var app_1 = __webpack_require__(/*! @firebase/app */ 11);
 var util_1 = __webpack_require__(/*! @firebase/util */ 0);
 var util_2 = __webpack_require__(/*! ../core/util/util */ 1);
-var StatsManager_1 = __webpack_require__(/*! ../core/stats/StatsManager */ 40);
+var StatsManager_1 = __webpack_require__(/*! ../core/stats/StatsManager */ 41);
 var Constants_1 = __webpack_require__(/*! ./Constants */ 24);
 var util_3 = __webpack_require__(/*! @firebase/util */ 0);
 var storage_1 = __webpack_require__(/*! ../core/storage/storage */ 23);
@@ -24375,7 +24375,7 @@ exports.WebSocketConnection = WebSocketConnection;
 
 //# sourceMappingURL=WebSocketConnection.js.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../../../../../process/browser.js */ 33)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../../../../../process/browser.js */ 34)))
 
 /***/ }),
 /* 75 */
@@ -24487,7 +24487,7 @@ exports.ServerActions = ServerActions;
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var IndexedFilter_1 = __webpack_require__(/*! ./IndexedFilter */ 39);
+var IndexedFilter_1 = __webpack_require__(/*! ./IndexedFilter */ 40);
 var PriorityIndex_1 = __webpack_require__(/*! ../../snap/indexes/PriorityIndex */ 6);
 var Node_1 = __webpack_require__(/*! ../../../core/snap/Node */ 8);
 var ChildrenNode_1 = __webpack_require__(/*! ../../snap/ChildrenNode */ 7);
@@ -25047,11 +25047,11 @@ var ErrorCode;
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Reference; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__implementation_args__ = __webpack_require__(/*! ./implementation/args */ 42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__implementation_args__ = __webpack_require__(/*! ./implementation/args */ 43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__implementation_blob__ = __webpack_require__(/*! ./implementation/blob */ 84);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__implementation_error__ = __webpack_require__(/*! ./implementation/error */ 10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__implementation_location__ = __webpack_require__(/*! ./implementation/location */ 32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__implementation_metadata__ = __webpack_require__(/*! ./implementation/metadata */ 43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__implementation_metadata__ = __webpack_require__(/*! ./implementation/metadata */ 44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__implementation_object__ = __webpack_require__(/*! ./implementation/object */ 18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__implementation_path__ = __webpack_require__(/*! ./implementation/path */ 83);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__implementation_requests__ = __webpack_require__(/*! ./implementation/requests */ 85);
@@ -25548,14 +25548,14 @@ var FbsBlob = /** @class */ (function () {
 /* harmony export (immutable) */ __webpack_exports__["f"] = getResumableUploadStatus;
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return resumableUploadChunkSize; });
 /* harmony export (immutable) */ __webpack_exports__["b"] = continueResumableUpload;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__array__ = __webpack_require__(/*! ./array */ 45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__array__ = __webpack_require__(/*! ./array */ 46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__blob__ = __webpack_require__(/*! ./blob */ 84);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__error__ = __webpack_require__(/*! ./error */ 10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__metadata__ = __webpack_require__(/*! ./metadata */ 43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__metadata__ = __webpack_require__(/*! ./metadata */ 44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__object__ = __webpack_require__(/*! ./object */ 18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__requestinfo__ = __webpack_require__(/*! ./requestinfo */ 156);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__type__ = __webpack_require__(/*! ./type */ 9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__url__ = __webpack_require__(/*! ./url */ 44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__url__ = __webpack_require__(/*! ./url */ 45);
 /**
  * Copyright 2017 Google Inc.
  *
@@ -25900,9 +25900,9 @@ function continueResumableUpload(location, authWrapper, url, blob, chunkSize, ma
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(/*! vue */ 46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(/*! vue */ 33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_firebase__ = __webpack_require__(/*! firebase */ 34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_firebase__ = __webpack_require__(/*! firebase */ 35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_firebase___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_firebase__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_framework7__ = __webpack_require__(/*! framework7 */ 167);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_framework7___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_framework7__);
@@ -25915,18 +25915,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_framework7_dist_css_framework7_ios_colors_min_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_framework7_dist_css_framework7_ios_colors_min_css__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_framework7_icons_css_framework7_icons_css__ = __webpack_require__(/*! framework7-icons/css/framework7-icons.css */ 176);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_framework7_icons_css_framework7_icons_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_framework7_icons_css_framework7_icons_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_vue_star_rating__ = __webpack_require__(/*! vue-star-rating */ 177);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_vue_star_rating___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_vue_star_rating__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__pages_shared_likePopup_vue__ = __webpack_require__(/*! ./pages/shared/likePopup.vue */ 178);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__pages_shared_likePopup_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__pages_shared_likePopup_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__assets_sass_main_scss__ = __webpack_require__(/*! ./assets/sass/main.scss */ 184);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__assets_sass_main_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__assets_sass_main_scss__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__routes_js__ = __webpack_require__(/*! ./routes.js */ 186);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__main_vue__ = __webpack_require__(/*! ./main.vue */ 251);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__main_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12__main_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__config_firebase__ = __webpack_require__(/*! ./config/firebase */ 15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_vuefire__ = __webpack_require__(/*! vuefire */ 267);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_vuefire___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14_vuefire__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_vue_social_sharing__ = __webpack_require__(/*! vue-social-sharing */ 177);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_vue_social_sharing___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_vue_social_sharing__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_vue_star_rating__ = __webpack_require__(/*! vue-star-rating */ 178);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_vue_star_rating___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_vue_star_rating__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__pages_shared_likePopup_vue__ = __webpack_require__(/*! ./pages/shared/likePopup.vue */ 179);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__pages_shared_likePopup_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__pages_shared_likePopup_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__pages_shared_sharepopup_vue__ = __webpack_require__(/*! ./pages/shared/sharepopup.vue */ 185);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__pages_shared_sharepopup_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__pages_shared_sharepopup_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__assets_sass_main_scss__ = __webpack_require__(/*! ./assets/sass/main.scss */ 190);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__assets_sass_main_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12__assets_sass_main_scss__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__routes_js__ = __webpack_require__(/*! ./routes.js */ 192);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__main_vue__ = __webpack_require__(/*! ./main.vue */ 257);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__main_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14__main_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__config_firebase__ = __webpack_require__(/*! ./config/firebase */ 15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_vuefire__ = __webpack_require__(/*! vuefire */ 273);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_vuefire___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16_vuefire__);
 // Import Vue
 
 
@@ -25947,10 +25951,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  */
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('star-rating', __WEBPACK_IMPORTED_MODULE_8_vue_star_rating___default.a)
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_8_vue_social_sharing___default.a)
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('likePopup', __WEBPACK_IMPORTED_MODULE_9__pages_shared_likePopup_vue___default.a)
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('star-rating', __WEBPACK_IMPORTED_MODULE_9_vue_star_rating___default.a)
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('likePopup', __WEBPACK_IMPORTED_MODULE_10__pages_shared_likePopup_vue___default.a)
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('sharepopup', __WEBPACK_IMPORTED_MODULE_11__pages_shared_sharepopup_vue___default.a)
 // Import App Custom Styles
 
 
@@ -25964,7 +25974,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('likePopup', __WEBPACK_IMP
 // Import firebase.js and vuefire and add plugin
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_14_vuefire___default.a)
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_16_vuefire___default.a)
 
 // Init F7 Vue Plugin
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_4_framework7_vue___default.a)
@@ -25979,12 +25989,12 @@ new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
     root: '#app',
     /* Uncomment to enable Material theme: */
     // material: true,
-    routes: __WEBPACK_IMPORTED_MODULE_11__routes_js__["a" /* default */]
+    routes: __WEBPACK_IMPORTED_MODULE_13__routes_js__["a" /* default */]
 
   },
   // Register App Component
   components: {
-    app: __WEBPACK_IMPORTED_MODULE_12__main_vue___default.a
+    app: __WEBPACK_IMPORTED_MODULE_14__main_vue___default.a
   },
   created(){
     __WEBPACK_IMPORTED_MODULE_1_firebase__["auth"]().onAuthStateChanged((user)=>{
@@ -26195,7 +26205,7 @@ new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../webpack/buildin/global.js */ 16), __webpack_require__(/*! ./../process/browser.js */ 33)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../webpack/buildin/global.js */ 16), __webpack_require__(/*! ./../process/browser.js */ 34)))
 
 /***/ }),
 /* 88 */
@@ -27253,7 +27263,7 @@ exports.Deferred = Deferred;
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var constants_1 = __webpack_require__(/*! ./constants */ 35);
+var constants_1 = __webpack_require__(/*! ./constants */ 36);
 /**
  * Returns navigator.userAgent string or '' if it's not defined.
  * @return {string} user agent string
@@ -28811,11 +28821,11 @@ var Database_1 = __webpack_require__(/*! ./src/api/Database */ 52);
 exports.Database = Database_1.Database;
 var Query_1 = __webpack_require__(/*! ./src/api/Query */ 56);
 exports.Query = Query_1.Query;
-var Reference_1 = __webpack_require__(/*! ./src/api/Reference */ 36);
+var Reference_1 = __webpack_require__(/*! ./src/api/Reference */ 37);
 exports.Reference = Reference_1.Reference;
 var util_1 = __webpack_require__(/*! ./src/core/util/util */ 1);
 exports.enableLogging = util_1.enableLogging;
-var RepoManager_1 = __webpack_require__(/*! ./src/core/RepoManager */ 41);
+var RepoManager_1 = __webpack_require__(/*! ./src/core/RepoManager */ 42);
 var INTERNAL = __webpack_require__(/*! ./src/api/internal */ 141);
 var TEST_ACCESS = __webpack_require__(/*! ./src/api/test_access */ 142);
 var util_2 = __webpack_require__(/*! @firebase/util */ 0);
@@ -28840,7 +28850,7 @@ function registerDatabase(instance) {
 }
 exports.registerDatabase = registerDatabase;
 registerDatabase(app_1.default);
-var DataSnapshot_1 = __webpack_require__(/*! ./src/api/DataSnapshot */ 37);
+var DataSnapshot_1 = __webpack_require__(/*! ./src/api/DataSnapshot */ 38);
 exports.DataSnapshot = DataSnapshot_1.DataSnapshot;
 var onDisconnect_1 = __webpack_require__(/*! ./src/api/onDisconnect */ 55);
 exports.OnDisconnect = onDisconnect_1.OnDisconnect;
@@ -29176,7 +29186,7 @@ exports.nextPushId = (function () {
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var DataSnapshot_1 = __webpack_require__(/*! ../../api/DataSnapshot */ 37);
+var DataSnapshot_1 = __webpack_require__(/*! ../../api/DataSnapshot */ 38);
 var Event_1 = __webpack_require__(/*! ./Event */ 115);
 var util_1 = __webpack_require__(/*! @firebase/util */ 0);
 var util_2 = __webpack_require__(/*! @firebase/util */ 0);
@@ -29532,7 +29542,7 @@ var util_2 = __webpack_require__(/*! ./util/util */ 1);
 var AckUserWrite_1 = __webpack_require__(/*! ./operation/AckUserWrite */ 117);
 var ChildrenNode_1 = __webpack_require__(/*! ./snap/ChildrenNode */ 7);
 var util_3 = __webpack_require__(/*! @firebase/util */ 0);
-var ImmutableTree_1 = __webpack_require__(/*! ./util/ImmutableTree */ 38);
+var ImmutableTree_1 = __webpack_require__(/*! ./util/ImmutableTree */ 39);
 var ListenComplete_1 = __webpack_require__(/*! ./operation/ListenComplete */ 118);
 var Merge_1 = __webpack_require__(/*! ./operation/Merge */ 119);
 var Operation_1 = __webpack_require__(/*! ./operation/Operation */ 13);
@@ -30473,7 +30483,7 @@ exports.Merge = Merge;
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var IndexedFilter_1 = __webpack_require__(/*! ./filter/IndexedFilter */ 39);
+var IndexedFilter_1 = __webpack_require__(/*! ./filter/IndexedFilter */ 40);
 var ViewProcessor_1 = __webpack_require__(/*! ./ViewProcessor */ 121);
 var ChildrenNode_1 = __webpack_require__(/*! ../snap/ChildrenNode */ 7);
 var CacheNode_1 = __webpack_require__(/*! ./CacheNode */ 29);
@@ -30699,7 +30709,7 @@ var ChildChangeAccumulator_1 = __webpack_require__(/*! ./ChildChangeAccumulator 
 var Change_1 = __webpack_require__(/*! ./Change */ 17);
 var ChildrenNode_1 = __webpack_require__(/*! ../snap/ChildrenNode */ 7);
 var KeyIndex_1 = __webpack_require__(/*! ../snap/indexes/KeyIndex */ 19);
-var ImmutableTree_1 = __webpack_require__(/*! ../util/ImmutableTree */ 38);
+var ImmutableTree_1 = __webpack_require__(/*! ../util/ImmutableTree */ 39);
 var Path_1 = __webpack_require__(/*! ../util/Path */ 2);
 var CompleteChildSource_1 = __webpack_require__(/*! ./CompleteChildSource */ 123);
 /**
@@ -32295,7 +32305,7 @@ exports.WriteTreeRef = WriteTreeRef;
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var ImmutableTree_1 = __webpack_require__(/*! ./util/ImmutableTree */ 38);
+var ImmutableTree_1 = __webpack_require__(/*! ./util/ImmutableTree */ 39);
 var Path_1 = __webpack_require__(/*! ./util/Path */ 2);
 var util_1 = __webpack_require__(/*! @firebase/util */ 0);
 var Node_1 = __webpack_require__(/*! ./snap/Node */ 8);
@@ -33608,7 +33618,7 @@ var KeyIndex_1 = __webpack_require__(/*! ../snap/indexes/KeyIndex */ 19);
 var PriorityIndex_1 = __webpack_require__(/*! ../snap/indexes/PriorityIndex */ 6);
 var ValueIndex_1 = __webpack_require__(/*! ../snap/indexes/ValueIndex */ 58);
 var PathIndex_1 = __webpack_require__(/*! ../snap/indexes/PathIndex */ 62);
-var IndexedFilter_1 = __webpack_require__(/*! ./filter/IndexedFilter */ 39);
+var IndexedFilter_1 = __webpack_require__(/*! ./filter/IndexedFilter */ 40);
 var LimitedFilter_1 = __webpack_require__(/*! ./filter/LimitedFilter */ 138);
 var RangedFilter_1 = __webpack_require__(/*! ./filter/RangedFilter */ 76);
 var util_3 = __webpack_require__(/*! @firebase/util */ 0);
@@ -34292,8 +34302,8 @@ exports.LimitedFilter = LimitedFilter;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = __webpack_require__(/*! @firebase/util */ 0);
-var Reference_1 = __webpack_require__(/*! ../api/Reference */ 36);
-var DataSnapshot_1 = __webpack_require__(/*! ../api/DataSnapshot */ 37);
+var Reference_1 = __webpack_require__(/*! ../api/Reference */ 37);
+var DataSnapshot_1 = __webpack_require__(/*! ../api/DataSnapshot */ 38);
 var Path_1 = __webpack_require__(/*! ./util/Path */ 2);
 var Tree_1 = __webpack_require__(/*! ./util/Tree */ 140);
 var PriorityIndex_1 = __webpack_require__(/*! ./snap/indexes/PriorityIndex */ 6);
@@ -35175,7 +35185,7 @@ exports.interceptServerData = function (ref, callback) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var RepoInfo_1 = __webpack_require__(/*! ../core/RepoInfo */ 54);
 var PersistentConnection_1 = __webpack_require__(/*! ../core/PersistentConnection */ 70);
-var RepoManager_1 = __webpack_require__(/*! ../core/RepoManager */ 41);
+var RepoManager_1 = __webpack_require__(/*! ../core/RepoManager */ 42);
 var Connection_1 = __webpack_require__(/*! ../realtime/Connection */ 72);
 exports.DataConnection = PersistentConnection_1.PersistentConnection;
 /**
@@ -36919,8 +36929,8 @@ var RequestInfo = /** @class */ (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__implementation_taskenums__ = __webpack_require__(/*! ./implementation/taskenums */ 22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__implementation_observer__ = __webpack_require__(/*! ./implementation/observer */ 158);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tasksnapshot__ = __webpack_require__(/*! ./tasksnapshot */ 159);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__implementation_args__ = __webpack_require__(/*! ./implementation/args */ 42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__implementation_array__ = __webpack_require__(/*! ./implementation/array */ 45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__implementation_args__ = __webpack_require__(/*! ./implementation/args */ 43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__implementation_array__ = __webpack_require__(/*! ./implementation/array */ 46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__implementation_async__ = __webpack_require__(/*! ./implementation/async */ 160);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__implementation_error__ = __webpack_require__(/*! ./implementation/error */ 10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__implementation_promise_external__ = __webpack_require__(/*! ./implementation/promise_external */ 14);
@@ -37653,7 +37663,7 @@ function async(f) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Service; });
 /* unused harmony export ServiceInternals */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__implementation_args__ = __webpack_require__(/*! ./implementation/args */ 42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__implementation_args__ = __webpack_require__(/*! ./implementation/args */ 43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__implementation_authwrapper__ = __webpack_require__(/*! ./implementation/authwrapper */ 162);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__implementation_location__ = __webpack_require__(/*! ./implementation/location */ 32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__implementation_promise_external__ = __webpack_require__(/*! ./implementation/promise_external */ 14);
@@ -38071,13 +38081,13 @@ var RequestMap = /** @class */ (function () {
 /* unused harmony export addVersionHeader_ */
 /* harmony export (immutable) */ __webpack_exports__["a"] = makeRequest;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__firebase_app__ = __webpack_require__(/*! @firebase/app */ 11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(/*! ./array */ 45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(/*! ./array */ 46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__backoff__ = __webpack_require__(/*! ./backoff */ 166);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__error__ = __webpack_require__(/*! ./error */ 10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__object__ = __webpack_require__(/*! ./object */ 18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__promise_external__ = __webpack_require__(/*! ./promise_external */ 14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__type__ = __webpack_require__(/*! ./type */ 9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__url__ = __webpack_require__(/*! ./url */ 44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__url__ = __webpack_require__(/*! ./url */ 45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__xhrio__ = __webpack_require__(/*! ./xhrio */ 81);
 /**
  * Copyright 2017 Google Inc.
@@ -57047,10 +57057,10 @@ return t7;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(/*! vue */ 46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(/*! vue */ 33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(/*! vuex */ 169);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_firebase__ = __webpack_require__(/*! firebase */ 34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_firebase__ = __webpack_require__(/*! firebase */ 35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_firebase___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_firebase__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_util__ = __webpack_require__(/*! util */ 170);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_util___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_util__);
@@ -59013,7 +59023,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../webpack/buildin/global.js */ 16), __webpack_require__(/*! ./../process/browser.js */ 33)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../webpack/buildin/global.js */ 16), __webpack_require__(/*! ./../process/browser.js */ 34)))
 
 /***/ }),
 /* 171 */
@@ -59125,6 +59135,382 @@ this.$emit("click:text",e)},onAvatarClick:function(e){this.$emit("click:avatar",
 
 /***/ }),
 /* 177 */
+/*!***************************************************************************!*\
+  !*** ./node_modules/vue-social-sharing/dist/vue-social-sharing.common.js ***!
+  \***************************************************************************/
+/*! dynamic exports provided */
+/*! exports used: default */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*!
+ * vue-social-sharing v2.3.3 
+ * (c) 2017 nicolasbeauvais
+ * Released under the MIT License.
+ */
+
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var Vue = _interopDefault(__webpack_require__(/*! vue */ 33));
+
+var SocialSharingNetwork = {
+  functional: true,
+
+  props: {
+    network: {
+      type: String,
+      default: ''
+    }
+  },
+
+  render: function (createElement, context) {
+    var network = context.parent._data.baseNetworks[context.props.network];
+
+    if (!network) {
+      return console.warn(("Network " + (context.props.network) + " does not exist"));
+    }
+
+    return createElement(context.parent.networkTag, {
+      staticClass: context.data.staticClass || null,
+      staticStyle: context.data.staticStyle || null,
+      class: context.data.class || null,
+      style: context.data.style || null,
+      attrs: {
+        id: context.data.attrs.id || null,
+        'data-link': network.type === 'popup'
+          ? '#share-' + context.props.network
+          : context.parent.createSharingUrl(context.props.network),
+        'data-action': network.type === 'popup' ? null : network.action
+      },
+      on: {
+        click: network.type === 'popup' ? function () {
+          context.parent.share(context.props.network);
+        } : function () {
+          context.parent.touch(context.props.network);
+        }
+      }
+    }, context.children);
+  }
+};
+
+var email = {"sharer":"mailto:?subject=@title&body=@url%0D%0A%0D%0A@description","type":"direct"};
+var facebook = {"sharer":"https://www.facebook.com/sharer/sharer.php?u=@url&title=@title&description=@description&quote=@quote","type":"popup"};
+var googleplus = {"sharer":"https://plus.google.com/share?url=@url","type":"popup"};
+var line = {"sharer":"http://line.me/R/msg/text/?@description%0D%0A@url","type":"popup"};
+var linkedin = {"sharer":"https://www.linkedin.com/shareArticle?mini=true&url=@url&title=@title&summary=@description","type":"popup"};
+var odnoklassniki = {"sharer":"https://connect.ok.ru/dk?st.cmd=WidgetSharePreview&st.shareUrl=@url&st.comments=@description","type":"popup"};
+var pinterest = {"sharer":"https://pinterest.com/pin/create/button/?url=@url&media=@media&description=@title","type":"popup"};
+var reddit = {"sharer":"https://www.reddit.com/submit?url=@url&title=@title","type":"popup"};
+var skype = {"sharer":"https://web.skype.com/share?url=@description%0D%0A@url","type":"popup"};
+var telegram = {"sharer":"https://t.me/share/url?url=@url&text=@description","type":"popup"};
+var twitter = {"sharer":"https://twitter.com/intent/tweet?text=@title&url=@url&hashtags=@hashtags@twitteruser","type":"popup"};
+var viber = {"sharer":"viber://forward?text=@url @description","type":"direct"};
+var vk = {"sharer":"https://vk.com/share.php?url=@url&title=@title&description=@description&image=@media&noparse=true","type":"popup"};
+var weibo = {"sharer":"http://service.weibo.com/share/share.php?url=@url&title=@title","type":"popup"};
+var whatsapp = {"sharer":"whatsapp://send?text=@description%0D%0A@url","type":"direct","action":"share/whatsapp/share"};
+var sms = {"sharer":"sms:?body=@url%20@description","type":"direct"};
+var BaseNetworks = {
+	email: email,
+	facebook: facebook,
+	googleplus: googleplus,
+	line: line,
+	linkedin: linkedin,
+	odnoklassniki: odnoklassniki,
+	pinterest: pinterest,
+	reddit: reddit,
+	skype: skype,
+	telegram: telegram,
+	twitter: twitter,
+	viber: viber,
+	vk: vk,
+	weibo: weibo,
+	whatsapp: whatsapp,
+	sms: sms
+};
+
+var inBrowser = typeof window !== 'undefined';
+var $window = inBrowser ? window : null;
+
+var SocialSharing = {
+  props: {
+    /**
+     * URL to share.
+     * @var string
+     */
+    url: {
+      type: String,
+      default: inBrowser ? window.location.href : ''
+    },
+
+    /**
+     * Sharing title, if available by network.
+     * @var string
+     */
+    title: {
+      type: String,
+      default: ''
+    },
+
+    /**
+     * Sharing description, if available by network.
+     * @var string
+     */
+    description: {
+      type: String,
+      default: ''
+    },
+
+    /**
+     * Facebook quote
+     * @var string
+     */
+    quote: {
+      type: String,
+      default: ''
+    },
+
+    /**
+     * Twitter hashtags
+     * @var string
+     */
+    hashtags: {
+      type: String,
+      default: ''
+    },
+
+    /**
+     * Twitter user.
+     * @var string
+     */
+    twitterUser: {
+      type: String,
+      default: ''
+    },
+
+    /**
+     * Flag that indicates if counts should be retrieved.
+     * - NOT WORKING IN CURRENT VERSION
+     * @var mixed
+     */
+    withCounts: {
+      type: [String, Boolean],
+      default: false
+    },
+
+    /**
+     * Google plus key.
+     * @var string
+     */
+    googleKey: {
+      type: String,
+      default: undefined
+    },
+
+    /**
+     * Pinterest Media URL.
+     * Specifies the image/media to be used.
+     */
+    media: {
+      type: String,
+      default: ''
+    },
+
+    /**
+     * Network sub component tag.
+     * Default to span tag
+     */
+    networkTag: {
+      type: String,
+      default: 'span'
+    },
+
+    /**
+     * Additional or overridden networks.
+     * Default to BaseNetworks
+     */
+    networks: {
+      type: Object,
+      default: function () {
+        return {};
+      }
+    }
+  },
+
+  data: function data () {
+    return {
+      /**
+       * Available sharing networks.
+       * @param object
+       */
+      baseNetworks: BaseNetworks,
+
+      /**
+       * Popup settings.
+       * @param object
+       */
+      popup: {
+        status: false,
+        resizable: true,
+        toolbar: false,
+        menubar: false,
+        scrollbars: false,
+        location: false,
+        directories: false,
+        width: 626,
+        height: 436,
+        top: 0,
+        left: 0,
+        window: undefined,
+        interval: null
+      }
+    };
+  },
+
+  methods: {
+    /**
+     * Returns generated sharer url.
+     *
+     * @param network Social network key.
+     */
+    createSharingUrl: function createSharingUrl (network) {
+      return this.baseNetworks[network].sharer
+        .replace(/@url/g, encodeURIComponent(this.url))
+        .replace(/@title/g, encodeURIComponent(this.title))
+        .replace(/@description/g, encodeURIComponent(this.description))
+        .replace(/@quote/g, encodeURIComponent(this.quote))
+        .replace(/@hashtags/g, this.hashtags)
+        .replace(/@media/g, this.media)
+        .replace(/@twitteruser/g, this.twitterUser ? '&via=' + this.twitterUser : '');
+    },
+
+    /**
+     * Shares URL in specified network.
+     *
+     * @param string network Social network key.
+     */
+    share: function share (network) {
+      this.openSharer(network, this.createSharingUrl(network));
+
+      this.$root.$emit('social_shares_open', network, this.url);
+      this.$emit('open', network, this.url);
+    },
+
+    /**
+     * Touches network and emits click event.
+     *
+     * @param string network Social network key.
+     */
+    touch: function touch (network) {
+      window.open(this.createSharingUrl(network), '_self');
+
+      this.$root.$emit('social_shares_open', network, this.url);
+      this.$emit('open', network, this.url);
+    },
+
+    /**
+     * Opens sharer popup.
+     *
+     * @param string url Url to share.
+     */
+    openSharer: function openSharer (network, url) {
+      var this$1 = this;
+
+      // If a popup window already exist it will be replaced, trigger a close event.
+      if (this.popup.window && this.popup.interval) {
+        clearInterval(this.popup.interval);
+
+        this.popup.window.close();// Force close (for Facebook)
+
+        this.$root.$emit('social_shares_change', network, this.url);
+        this.$emit('change', network, this.url);
+      }
+
+      this.popup.window = window.open(
+        url,
+        'sharer',
+        'status=' + (this.popup.status ? 'yes' : 'no') +
+        ',height=' + this.popup.height +
+        ',width=' + this.popup.width +
+        ',resizable=' + (this.popup.resizable ? 'yes' : 'no') +
+        ',left=' + this.popup.left +
+        ',top=' + this.popup.top +
+        ',screenX=' + this.popup.left +
+        ',screenY=' + this.popup.top +
+        ',toolbar=' + (this.popup.toolbar ? 'yes' : 'no') +
+        ',menubar=' + (this.popup.menubar ? 'yes' : 'no') +
+        ',scrollbars=' + (this.popup.scrollbars ? 'yes' : 'no') +
+        ',location=' + (this.popup.location ? 'yes' : 'no') +
+        ',directories=' + (this.popup.directories ? 'yes' : 'no')
+      );
+
+      this.popup.window.focus();
+
+      // Create an interval to detect popup closing event
+      this.popup.interval = setInterval(function () {
+        if (this$1.popup.window.closed) {
+          clearInterval(this$1.popup.interval);
+
+          this$1.popup.window = undefined;
+
+          this$1.$root.$emit('social_shares_close', network, this$1.url);
+          this$1.$emit('close', network, this$1.url);
+        }
+      }, 500);
+    }
+  },
+
+  /**
+   * Merge base networks list with user's list
+   */
+  beforeMount: function beforeMount () {
+    this.baseNetworks = Vue.util.extend(this.baseNetworks, this.networks);
+  },
+
+  /**
+   * Sets popup default dimensions.
+   */
+  mounted: function mounted () {
+    if (!inBrowser) {
+      return;
+    }
+
+    /**
+     * Center the popup on dual screens
+     * http://stackoverflow.com/questions/4068373/center-a-popup-window-on-screen/32261263
+     */
+    var dualScreenLeft = $window.screenLeft !== undefined ? $window.screenLeft : screen.left;
+    var dualScreenTop = $window.screenTop !== undefined ? $window.screenTop : screen.top;
+
+    var width = $window.innerWidth ? $window.innerWidth : (document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width);
+    var height = $window.innerHeight ? $window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height);
+
+    this.popup.left = ((width / 2) - (this.popup.width / 2)) + dualScreenLeft;
+    this.popup.top = ((height / 2) - (this.popup.height / 2)) + dualScreenTop;
+  },
+
+  /**
+   * Set component aliases for buttons and links.
+   */
+  components: {
+    'network': SocialSharingNetwork
+  }
+};
+
+SocialSharing.version = '2.3.3';
+
+SocialSharing.install = function (Vue) {
+  Vue.component('social-sharing', SocialSharing);
+};
+
+if (typeof window !== 'undefined') {
+  window.SocialSharing = SocialSharing;
+}
+
+module.exports = SocialSharing;
+
+/***/ }),
+/* 178 */
 /*!**************************************************************!*\
   !*** ./node_modules/vue-star-rating/dist/star-rating.min.js ***!
   \**************************************************************/
@@ -59136,7 +59522,7 @@ this.$emit("click:text",e)},onAvatarClick:function(e){this.$emit("click:avatar",
 //# sourceMappingURL=star-rating.min.js.map
 
 /***/ }),
-/* 178 */
+/* 179 */
 /*!****************************************!*\
   !*** ./src/pages/shared/likePopup.vue ***!
   \****************************************/
@@ -59147,13 +59533,13 @@ this.$emit("click:text",e)},onAvatarClick:function(e){this.$emit("click:avatar",
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-d21e120e","scoped":true,"hasInlineConfig":false}!../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./likePopup.vue */ 179)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-d21e120e","scoped":true,"hasInlineConfig":false}!../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./likePopup.vue */ 180)
 }
 var Component = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../../node_modules/vue-loader/lib/selector?type=script&index=0!./likePopup.vue */ 182),
+  __webpack_require__(/*! !!../../../node_modules/vue-loader/lib/selector?type=script&index=0!./likePopup.vue */ 183),
   /* template */
-  __webpack_require__(/*! !../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-d21e120e","hasScoped":true}!../../../node_modules/vue-loader/lib/selector?type=template&index=0!./likePopup.vue */ 183),
+  __webpack_require__(/*! !../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-d21e120e","hasScoped":true}!../../../node_modules/vue-loader/lib/selector?type=template&index=0!./likePopup.vue */ 184),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -59185,7 +59571,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 179 */
+/* 180 */
 /*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-d21e120e","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/shared/likePopup.vue ***!
   \***************************************************************************************************************************************************************************************************************************************************************************************/
@@ -59196,7 +59582,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-d21e120e","scoped":true,"hasInlineConfig":false}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./likePopup.vue */ 180);
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-d21e120e","scoped":true,"hasInlineConfig":false}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./likePopup.vue */ 181);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -59216,7 +59602,7 @@ if(false) {
 }
 
 /***/ }),
-/* 180 */
+/* 181 */
 /*!*******************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-d21e120e","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/shared/likePopup.vue ***!
   \*******************************************************************************************************************************************************************************************************************************************************/
@@ -59235,7 +59621,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 181 */
+/* 182 */
 /*!***********************************************************!*\
   !*** ./node_modules/vue-style-loader/lib/listToStyles.js ***!
   \***********************************************************/
@@ -59273,7 +59659,7 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 182 */
+/* 183 */
 /*!******************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/shared/likePopup.vue ***!
   \******************************************************************************************************/
@@ -59321,7 +59707,7 @@ props:['product'],
 
 
 /***/ }),
-/* 183 */
+/* 184 */
 /*!**************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-d21e120e","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/shared/likePopup.vue ***!
   \**************************************************************************************************************************************************************************************************/
@@ -59335,7 +59721,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "overflow": "hidden"
     },
     attrs: {
-      "id": 'popup' + _vm.product.id
+      "id": 'favpopup' + _vm.product.id
     }
   }, [_c('f7-nav-right', {
     staticStyle: {
@@ -59390,7 +59776,278 @@ if (false) {
 }
 
 /***/ }),
-/* 184 */
+/* 185 */
+/*!*****************************************!*\
+  !*** ./src/pages/shared/sharepopup.vue ***!
+  \*****************************************/
+/*! dynamic exports provided */
+/*! exports used: default */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-025bfa39","scoped":false,"hasInlineConfig":false}!../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./sharepopup.vue */ 186)
+}
+var Component = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/component-normalizer */ 3)(
+  /* script */
+  __webpack_require__(/*! !!../../../node_modules/vue-loader/lib/selector?type=script&index=0!./sharepopup.vue */ 188),
+  /* template */
+  __webpack_require__(/*! !../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-025bfa39","hasScoped":false}!../../../node_modules/vue-loader/lib/selector?type=template&index=0!./sharepopup.vue */ 189),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "C:\\Users\\Ruan\\Desktop\\nespressoApp\\src\\pages\\shared\\sharepopup.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] sharepopup.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-025bfa39", Component.options)
+  } else {
+    hotAPI.reload("data-v-025bfa39", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 186 */
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-025bfa39","scoped":false,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/shared/sharepopup.vue ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-025bfa39","scoped":false,"hasInlineConfig":false}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./sharepopup.vue */ 187);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(/*! ../../../node_modules/vue-style-loader/lib/addStylesClient.js */ 5)("6aae575f", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-025bfa39\",\"scoped\":false,\"hasInlineConfig\":false}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./sharepopup.vue", function() {
+     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-025bfa39\",\"scoped\":false,\"hasInlineConfig\":false}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./sharepopup.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 187 */
+/*!*********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-025bfa39","scoped":false,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/shared/sharepopup.vue ***!
+  \*********************************************************************************************************************************************************************************************************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ 4)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.social-icon{\r\nwidth: 27px;\r\n    height: 27px;\r\n    display: inline-block;\r\n    font-size: 34px;\r\n    margin-left: 10px;\r\n    margin-top: 29px;\r\n    margin-right: 10px;\n}\r\n    \r\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 188 */
+/*!*******************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/shared/sharepopup.vue ***!
+  \*******************************************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+props:['product'],
+  data() {
+      
+    return {
+      rating:null
+		};
+	},
+  	methods:{
+      setRating: function(rating){
+      this.rating= rating;
+    },
+		likeProduct(productId){
+			this.$store.dispatch('favoriteProduct',{productId,rating:this.rating})
+			this.$store.dispatch('fetchUserFavProducts')
+		},
+		unlikeProduct(productId){
+			this.$store.dispatch('unfavorateProduct',productId)
+			this.$store.dispatch('clearUserFavProducts',productId)
+		}
+	}
+});
+
+
+/***/ }),
+/* 189 */
+/*!****************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-025bfa39","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/shared/sharepopup.vue ***!
+  \****************************************************************************************************************************************************************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('f7-popup', {
+    staticStyle: {
+      "overflow": "hidden"
+    },
+    attrs: {
+      "id": 'sharepopup' + _vm.product.id
+    }
+  }, [_c('f7-nav-right', {
+    staticStyle: {
+      "text-align": "right"
+    }
+  }, [_c('f7-link', {
+    attrs: {
+      "close-popup": true
+    }
+  }, [_vm._v("X")])], 1), _vm._v(" "), _c('p', {
+    staticStyle: {
+      "position": "absolute",
+      "top": "-7px",
+      "left": "0",
+      "font-size": "18px",
+      "width": "100%",
+      "z-index": "-1",
+      "text-align": "center"
+    }
+  }, [_vm._v("Share on")]), _vm._v(" "), _c('social-sharing', {
+    attrs: {
+      "url": "https://nespresso-15ba4.firebaseapp.com/",
+      "title": "Nespresso",
+      "hashtags": "nespresso"
+    },
+    inlineTemplate: {
+      render: function() {
+        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+          return _c('div', [_c('network', {
+            staticClass: "social-icon",
+            attrs: {
+              "network": "email"
+            }
+          }, [_c('i', {
+            staticClass: "fa fa-envelope"
+          })]), _vm._v(" "), _c('network', {
+            staticClass: "social-icon",
+            attrs: {
+              "network": "facebook"
+            }
+          }, [_c('i', {
+            staticClass: "fa fa-facebook"
+          })]), _vm._v(" "), _c('network', {
+            staticClass: "social-icon",
+            attrs: {
+              "network": "skype"
+            }
+          }, [_c('i', {
+            staticClass: "fa fa-skype"
+          })]), _vm._v(" "), _c('network', {
+            staticClass: "social-icon",
+            attrs: {
+              "network": "sms"
+            }
+          }, [_c('i', {
+            staticClass: "fa fa-commenting-o"
+          })]), _vm._v(" "), _c('network', {
+            staticClass: "social-icon",
+            attrs: {
+              "network": "twitter"
+            }
+          }, [_c('i', {
+            staticClass: "fa fa-twitter"
+          })]), _vm._v(" "), _c('network', {
+            staticClass: "social-icon",
+            attrs: {
+              "network": "whatsapp"
+            }
+          }, [_c('i', {
+            staticClass: "fa fa-whatsapp"
+          })])], 1)
+        
+      },
+      staticRenderFns: []
+    }
+  })], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-025bfa39", module.exports)
+  }
+}
+
+/***/ }),
+/* 190 */
 /*!***********************************!*\
   !*** ./src/assets/sass/main.scss ***!
   \***********************************/
@@ -59400,7 +60057,7 @@ if (false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/sass-loader/lib/loader.js!./main.scss */ 185);
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/sass-loader/lib/loader.js!./main.scss */ 191);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -59420,7 +60077,7 @@ if(false) {
 }
 
 /***/ }),
-/* 185 */
+/* 191 */
 /*!******************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/sass-loader/lib/loader.js!./src/assets/sass/main.scss ***!
   \******************************************************************************************************/
@@ -59439,7 +60096,7 @@ exports.push([module.i, "* {\n  user-select: none; }\n\ninput {\n  user-select: 
 
 
 /***/ }),
-/* 186 */
+/* 192 */
 /*!***********************!*\
   !*** ./src/routes.js ***!
   \***********************/
@@ -59448,25 +60105,25 @@ exports.push([module.i, "* {\n  user-select: none; }\n\ninput {\n  user-select: 
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_productDetails__ = __webpack_require__(/*! ./pages/productDetails */ 187);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_productDetails__ = __webpack_require__(/*! ./pages/productDetails */ 193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_productDetails___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__pages_productDetails__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__pages_loginPage__ = __webpack_require__(/*! ./pages/loginPage */ 192);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__pages_loginPage__ = __webpack_require__(/*! ./pages/loginPage */ 198);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__pages_loginPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__pages_loginPage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages_signupPage__ = __webpack_require__(/*! ./pages/signupPage */ 197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages_signupPage__ = __webpack_require__(/*! ./pages/signupPage */ 203);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages_signupPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__pages_signupPage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__pages_profilePage__ = __webpack_require__(/*! ./pages/profilePage */ 202);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__pages_profilePage__ = __webpack_require__(/*! ./pages/profilePage */ 208);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__pages_profilePage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__pages_profilePage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_adminPage__ = __webpack_require__(/*! ./pages/adminPage */ 207);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_adminPage__ = __webpack_require__(/*! ./pages/adminPage */ 213);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_adminPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__pages_adminPage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_viewEditProduct__ = __webpack_require__(/*! ./pages/viewEditProduct */ 212);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_viewEditProduct__ = __webpack_require__(/*! ./pages/viewEditProduct */ 218);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_viewEditProduct___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__pages_viewEditProduct__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_editProduct__ = __webpack_require__(/*! ./pages/editProduct */ 217);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_editProduct__ = __webpack_require__(/*! ./pages/editProduct */ 223);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_editProduct___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__pages_editProduct__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_newProduct__ = __webpack_require__(/*! ./pages/newProduct */ 222);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_newProduct__ = __webpack_require__(/*! ./pages/newProduct */ 228);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_newProduct___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__pages_newProduct__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__pages_favorates__ = __webpack_require__(/*! ./pages/favorates */ 227);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__pages_favorates__ = __webpack_require__(/*! ./pages/favorates */ 233);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__pages_favorates___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__pages_favorates__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__pages_fovorateDetails__ = __webpack_require__(/*! ./pages/fovorateDetails */ 237);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__pages_fovorateDetails__ = __webpack_require__(/*! ./pages/fovorateDetails */ 243);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__pages_fovorateDetails___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__pages_fovorateDetails__);
 
 
@@ -59529,21 +60186,21 @@ exports.push([module.i, "* {\n  user-select: none; }\n\ninput {\n  user-select: 
   },
   {
     path: '/about/',
-    component: __webpack_require__(/*! ./assets/vue/pages/about.vue */ 242)
+    component: __webpack_require__(/*! ./assets/vue/pages/about.vue */ 248)
   },
   {
     path: '/form/',
-    component: __webpack_require__(/*! ./assets/vue/pages/form.vue */ 245)
+    component: __webpack_require__(/*! ./assets/vue/pages/form.vue */ 251)
   },
   {
     path: '/dynamic-route/blog/:blogId/post/:postId/',
-    component: __webpack_require__(/*! ./assets/vue/pages/dynamic-route.vue */ 248)
+    component: __webpack_require__(/*! ./assets/vue/pages/dynamic-route.vue */ 254)
   }
 ]);
 
 
 /***/ }),
-/* 187 */
+/* 193 */
 /*!**************************************!*\
   !*** ./src/pages/productDetails.vue ***!
   \**************************************/
@@ -59554,13 +60211,13 @@ exports.push([module.i, "* {\n  user-select: none; }\n\ninput {\n  user-select: 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-2b8566be","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./productDetails.vue */ 188)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-2b8566be","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./productDetails.vue */ 194)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./productDetails.vue */ 190),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./productDetails.vue */ 196),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-2b8566be","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./productDetails.vue */ 191),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-2b8566be","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./productDetails.vue */ 197),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -59592,7 +60249,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 188 */
+/* 194 */
 /*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-2b8566be","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/productDetails.vue ***!
   \*************************************************************************************************************************************************************************************************************************************************************************************/
@@ -59603,7 +60260,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-2b8566be","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./productDetails.vue */ 189);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-2b8566be","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./productDetails.vue */ 195);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -59623,7 +60280,7 @@ if(false) {
 }
 
 /***/ }),
-/* 189 */
+/* 195 */
 /*!*****************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-2b8566be","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/productDetails.vue ***!
   \*****************************************************************************************************************************************************************************************************************************************************/
@@ -59642,7 +60299,7 @@ exports.push([module.i, "\n.popup-link[data-v-2b8566be]{\n\twidth: 100%;\n}\n\n"
 
 
 /***/ }),
-/* 190 */
+/* 196 */
 /*!****************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/productDetails.vue ***!
   \****************************************************************************************************/
@@ -59724,7 +60381,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 191 */
+/* 197 */
 /*!************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-2b8566be","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/productDetails.vue ***!
   \************************************************************************************************************************************************************************************************/
@@ -59757,7 +60414,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "card-footer"
   }, [(_vm.isUserSignedIn) ? _c('div', [(!_vm.userLiked) ? _c('f7-link', {
     attrs: {
-      "open-popup": '#popup' + _vm.product.id
+      "open-popup": '#favpopup' + _vm.product.id
     }
   }, [_vm._v("LIKE")]) : _c('button', {
     staticClass: "button",
@@ -59769,12 +60426,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.unlikeProduct(_vm.product.id)
       }
     }
-  }, [_vm._v("Unlike")])], 1) : _vm._e(), _vm._v(" "), _c('a', {
-    staticClass: "link",
+  }, [_vm._v("Unlike")])], 1) : _vm._e(), _vm._v(" "), _c('f7-link', {
     attrs: {
-      "href": "#"
+      "open-popup": '#sharepopup' + _vm.product.id
     }
-  }, [_vm._v("Share")])])])], 1)
+  }, [_vm._v("Share")])], 1)])], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -59785,7 +60441,7 @@ if (false) {
 }
 
 /***/ }),
-/* 192 */
+/* 198 */
 /*!*********************************!*\
   !*** ./src/pages/loginPage.vue ***!
   \*********************************/
@@ -59796,13 +60452,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-6c23cd3a","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./loginPage.vue */ 193)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-6c23cd3a","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./loginPage.vue */ 199)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./loginPage.vue */ 195),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./loginPage.vue */ 201),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-6c23cd3a","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./loginPage.vue */ 196),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-6c23cd3a","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./loginPage.vue */ 202),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -59834,7 +60490,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 193 */
+/* 199 */
 /*!********************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-6c23cd3a","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/loginPage.vue ***!
   \********************************************************************************************************************************************************************************************************************************************************************************/
@@ -59845,7 +60501,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-6c23cd3a","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./loginPage.vue */ 194);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-6c23cd3a","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./loginPage.vue */ 200);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -59865,7 +60521,7 @@ if(false) {
 }
 
 /***/ }),
-/* 194 */
+/* 200 */
 /*!************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-6c23cd3a","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/loginPage.vue ***!
   \************************************************************************************************************************************************************************************************************************************************/
@@ -59884,7 +60540,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 195 */
+/* 201 */
 /*!***********************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/loginPage.vue ***!
   \***********************************************************************************************/
@@ -59952,7 +60608,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 196 */
+/* 202 */
 /*!*******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-6c23cd3a","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/loginPage.vue ***!
   \*******************************************************************************************************************************************************************************************/
@@ -60044,7 +60700,7 @@ if (false) {
 }
 
 /***/ }),
-/* 197 */
+/* 203 */
 /*!**********************************!*\
   !*** ./src/pages/signupPage.vue ***!
   \**********************************/
@@ -60055,13 +60711,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-9f5b51d6","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./signupPage.vue */ 198)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-9f5b51d6","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./signupPage.vue */ 204)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./signupPage.vue */ 200),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./signupPage.vue */ 206),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-9f5b51d6","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./signupPage.vue */ 201),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-9f5b51d6","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./signupPage.vue */ 207),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -60093,7 +60749,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 198 */
+/* 204 */
 /*!*********************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9f5b51d6","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/signupPage.vue ***!
   \*********************************************************************************************************************************************************************************************************************************************************************************/
@@ -60104,7 +60760,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9f5b51d6","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./signupPage.vue */ 199);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9f5b51d6","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./signupPage.vue */ 205);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -60124,7 +60780,7 @@ if(false) {
 }
 
 /***/ }),
-/* 199 */
+/* 205 */
 /*!*************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9f5b51d6","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/signupPage.vue ***!
   \*************************************************************************************************************************************************************************************************************************************************/
@@ -60143,7 +60799,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 200 */
+/* 206 */
 /*!************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/signupPage.vue ***!
   \************************************************************************************************/
@@ -60229,7 +60885,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 201 */
+/* 207 */
 /*!********************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-9f5b51d6","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/signupPage.vue ***!
   \********************************************************************************************************************************************************************************************/
@@ -60341,7 +60997,7 @@ if (false) {
 }
 
 /***/ }),
-/* 202 */
+/* 208 */
 /*!***********************************!*\
   !*** ./src/pages/profilePage.vue ***!
   \***********************************/
@@ -60352,13 +61008,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-9719e60c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./profilePage.vue */ 203)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-9719e60c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./profilePage.vue */ 209)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./profilePage.vue */ 205),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./profilePage.vue */ 211),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-9719e60c","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./profilePage.vue */ 206),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-9719e60c","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./profilePage.vue */ 212),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -60390,7 +61046,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 203 */
+/* 209 */
 /*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9719e60c","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/profilePage.vue ***!
   \**********************************************************************************************************************************************************************************************************************************************************************************/
@@ -60401,7 +61057,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9719e60c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./profilePage.vue */ 204);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9719e60c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./profilePage.vue */ 210);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -60421,7 +61077,7 @@ if(false) {
 }
 
 /***/ }),
-/* 204 */
+/* 210 */
 /*!**************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9719e60c","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/profilePage.vue ***!
   \**************************************************************************************************************************************************************************************************************************************************/
@@ -60440,7 +61096,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 205 */
+/* 211 */
 /*!*************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/profilePage.vue ***!
   \*************************************************************************************************/
@@ -60508,7 +61164,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 206 */
+/* 212 */
 /*!*********************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-9719e60c","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/profilePage.vue ***!
   \*********************************************************************************************************************************************************************************************/
@@ -60557,7 +61213,7 @@ if (false) {
 }
 
 /***/ }),
-/* 207 */
+/* 213 */
 /*!*********************************!*\
   !*** ./src/pages/adminPage.vue ***!
   \*********************************/
@@ -60568,13 +61224,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-553c9b20","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./adminPage.vue */ 208)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-553c9b20","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./adminPage.vue */ 214)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./adminPage.vue */ 210),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./adminPage.vue */ 216),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-553c9b20","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./adminPage.vue */ 211),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-553c9b20","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./adminPage.vue */ 217),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -60606,7 +61262,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 208 */
+/* 214 */
 /*!********************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-553c9b20","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/adminPage.vue ***!
   \********************************************************************************************************************************************************************************************************************************************************************************/
@@ -60617,7 +61273,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-553c9b20","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./adminPage.vue */ 209);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-553c9b20","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./adminPage.vue */ 215);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -60637,7 +61293,7 @@ if(false) {
 }
 
 /***/ }),
-/* 209 */
+/* 215 */
 /*!************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-553c9b20","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/adminPage.vue ***!
   \************************************************************************************************************************************************************************************************************************************************/
@@ -60656,7 +61312,7 @@ exports.push([module.i, "\n.subnav-page-content[data-v-553c9b20]{\n padding-top:
 
 
 /***/ }),
-/* 210 */
+/* 216 */
 /*!***********************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/adminPage.vue ***!
   \***********************************************************************************************/
@@ -60807,7 +61463,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 211 */
+/* 217 */
 /*!*******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-553c9b20","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/adminPage.vue ***!
   \*******************************************************************************************************************************************************************************************/
@@ -60858,7 +61514,7 @@ if (false) {
 }
 
 /***/ }),
-/* 212 */
+/* 218 */
 /*!***************************************!*\
   !*** ./src/pages/viewEditProduct.vue ***!
   \***************************************/
@@ -60869,13 +61525,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-5d2e287c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./viewEditProduct.vue */ 213)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-5d2e287c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./viewEditProduct.vue */ 219)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./viewEditProduct.vue */ 215),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./viewEditProduct.vue */ 221),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-5d2e287c","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./viewEditProduct.vue */ 216),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-5d2e287c","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./viewEditProduct.vue */ 222),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -60907,7 +61563,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 213 */
+/* 219 */
 /*!**************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-5d2e287c","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/viewEditProduct.vue ***!
   \**************************************************************************************************************************************************************************************************************************************************************************************/
@@ -60918,7 +61574,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-5d2e287c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./viewEditProduct.vue */ 214);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-5d2e287c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./viewEditProduct.vue */ 220);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -60938,7 +61594,7 @@ if(false) {
 }
 
 /***/ }),
-/* 214 */
+/* 220 */
 /*!******************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-5d2e287c","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/viewEditProduct.vue ***!
   \******************************************************************************************************************************************************************************************************************************************************/
@@ -60957,7 +61613,7 @@ exports.push([module.i, "\n.popup-link[data-v-5d2e287c]{\n\twidth: 100%;\n}\n\n"
 
 
 /***/ }),
-/* 215 */
+/* 221 */
 /*!*****************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/viewEditProduct.vue ***!
   \*****************************************************************************************************/
@@ -61007,7 +61663,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 216 */
+/* 222 */
 /*!*************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-5d2e287c","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/viewEditProduct.vue ***!
   \*************************************************************************************************************************************************************************************************/
@@ -61071,7 +61727,7 @@ if (false) {
 }
 
 /***/ }),
-/* 217 */
+/* 223 */
 /*!***********************************!*\
   !*** ./src/pages/editProduct.vue ***!
   \***********************************/
@@ -61082,13 +61738,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-f3a5fbb2","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./editProduct.vue */ 218)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-f3a5fbb2","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./editProduct.vue */ 224)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./editProduct.vue */ 220),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./editProduct.vue */ 226),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-f3a5fbb2","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./editProduct.vue */ 221),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-f3a5fbb2","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./editProduct.vue */ 227),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -61120,7 +61776,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 218 */
+/* 224 */
 /*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-f3a5fbb2","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/editProduct.vue ***!
   \**********************************************************************************************************************************************************************************************************************************************************************************/
@@ -61131,7 +61787,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-f3a5fbb2","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editProduct.vue */ 219);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-f3a5fbb2","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editProduct.vue */ 225);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -61151,7 +61807,7 @@ if(false) {
 }
 
 /***/ }),
-/* 219 */
+/* 225 */
 /*!**************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-f3a5fbb2","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/editProduct.vue ***!
   \**************************************************************************************************************************************************************************************************************************************************/
@@ -61170,7 +61826,7 @@ exports.push([module.i, "\n.popup-link[data-v-f3a5fbb2]{\n\twidth: 100%;\n}\n\n"
 
 
 /***/ }),
-/* 220 */
+/* 226 */
 /*!*************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/editProduct.vue ***!
   \*************************************************************************************************/
@@ -61252,7 +61908,7 @@ props:['productId'],
 
 
 /***/ }),
-/* 221 */
+/* 227 */
 /*!*********************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-f3a5fbb2","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/editProduct.vue ***!
   \*********************************************************************************************************************************************************************************************/
@@ -61396,7 +62052,7 @@ if (false) {
 }
 
 /***/ }),
-/* 222 */
+/* 228 */
 /*!**********************************!*\
   !*** ./src/pages/newProduct.vue ***!
   \**********************************/
@@ -61407,13 +62063,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-5db20e7d","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./newProduct.vue */ 223)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-5db20e7d","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./newProduct.vue */ 229)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./newProduct.vue */ 225),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./newProduct.vue */ 231),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-5db20e7d","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./newProduct.vue */ 226),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-5db20e7d","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./newProduct.vue */ 232),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -61445,7 +62101,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 223 */
+/* 229 */
 /*!*********************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-5db20e7d","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/newProduct.vue ***!
   \*********************************************************************************************************************************************************************************************************************************************************************************/
@@ -61456,7 +62112,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-5db20e7d","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./newProduct.vue */ 224);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-5db20e7d","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./newProduct.vue */ 230);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -61476,7 +62132,7 @@ if(false) {
 }
 
 /***/ }),
-/* 224 */
+/* 230 */
 /*!*************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-5db20e7d","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/newProduct.vue ***!
   \*************************************************************************************************************************************************************************************************************************************************/
@@ -61495,7 +62151,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 225 */
+/* 231 */
 /*!************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/newProduct.vue ***!
   \************************************************************************************************/
@@ -61664,7 +62320,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 226 */
+/* 232 */
 /*!********************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-5db20e7d","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/newProduct.vue ***!
   \********************************************************************************************************************************************************************************************/
@@ -61812,7 +62468,7 @@ if (false) {
 }
 
 /***/ }),
-/* 227 */
+/* 233 */
 /*!*********************************!*\
   !*** ./src/pages/favorates.vue ***!
   \*********************************/
@@ -61823,13 +62479,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-041d20fe","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./favorates.vue */ 228)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-041d20fe","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./favorates.vue */ 234)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./favorates.vue */ 230),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./favorates.vue */ 236),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-041d20fe","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./favorates.vue */ 236),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-041d20fe","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./favorates.vue */ 242),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -61861,7 +62517,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 228 */
+/* 234 */
 /*!********************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-041d20fe","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/favorates.vue ***!
   \********************************************************************************************************************************************************************************************************************************************************************************/
@@ -61872,7 +62528,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-041d20fe","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./favorates.vue */ 229);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-041d20fe","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./favorates.vue */ 235);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -61892,7 +62548,7 @@ if(false) {
 }
 
 /***/ }),
-/* 229 */
+/* 235 */
 /*!************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-041d20fe","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/favorates.vue ***!
   \************************************************************************************************************************************************************************************************************************************************/
@@ -61905,13 +62561,13 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 230 */
+/* 236 */
 /*!***********************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/favorates.vue ***!
   \***********************************************************************************************/
@@ -61921,10 +62577,8 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__favorate__ = __webpack_require__(/*! ./favorate */ 231);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__favorate__ = __webpack_require__(/*! ./favorate */ 237);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__favorate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__favorate__);
-//
-//
 //
 //
 //
@@ -61942,7 +62596,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
   data() {
     return {
-		
+		favorateProducts: this.$store.getters.favProductDetails
 		};
 	},
 	created(){
@@ -61952,9 +62606,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		user(){
 			return this.$store.getters.user
 		},
-		favorateProducts(){
-			return this.$store.getters.favProductDetails
-		}
+		// favorateProducts(){
+		// 	return this.$store.getters.favProductDetails
+		// },
+    sortedFavorateProducts: function() {
+      function compare(a, b) {
+        if (a.rating > b.rating)
+          return -1;
+        if (a.rating < b.rating)
+          return 1;
+        return 0;
+      }
+
+      return this.favorateProducts.sort(compare);
+    }
 	},
 	components:{
 			"favorate": __WEBPACK_IMPORTED_MODULE_0__favorate___default.a
@@ -61963,7 +62628,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 231 */
+/* 237 */
 /*!********************************!*\
   !*** ./src/pages/favorate.vue ***!
   \********************************/
@@ -61974,13 +62639,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-c690243c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./favorate.vue */ 232)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-c690243c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./favorate.vue */ 238)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./favorate.vue */ 234),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./favorate.vue */ 240),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-c690243c","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./favorate.vue */ 235),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-c690243c","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./favorate.vue */ 241),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -62012,7 +62677,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 232 */
+/* 238 */
 /*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-c690243c","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/favorate.vue ***!
   \*******************************************************************************************************************************************************************************************************************************************************************************/
@@ -62023,7 +62688,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-c690243c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./favorate.vue */ 233);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-c690243c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./favorate.vue */ 239);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -62043,7 +62708,7 @@ if(false) {
 }
 
 /***/ }),
-/* 233 */
+/* 239 */
 /*!***********************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-c690243c","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/favorate.vue ***!
   \***********************************************************************************************************************************************************************************************************************************************/
@@ -62062,7 +62727,7 @@ exports.push([module.i, "\n.popup-link[data-v-c690243c]{\n\t\twidth: 100%;\n}\nl
 
 
 /***/ }),
-/* 234 */
+/* 240 */
 /*!**********************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/favorate.vue ***!
   \**********************************************************************************************/
@@ -62109,7 +62774,7 @@ props:['favorateProduct','favorateProductId'],
 
 
 /***/ }),
-/* 235 */
+/* 241 */
 /*!******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-c690243c","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/favorate.vue ***!
   \******************************************************************************************************************************************************************************************/
@@ -62159,7 +62824,7 @@ if (false) {
 }
 
 /***/ }),
-/* 236 */
+/* 242 */
 /*!*******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-041d20fe","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/favorates.vue ***!
   \*******************************************************************************************************************************************************************************************/
@@ -62183,7 +62848,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "media-list": ""
     }
-  }, _vm._l((_vm.favorateProducts), function(favorateProduct) {
+  }, _vm._l((_vm.sortedFavorateProducts), function(favorateProduct) {
     return _c('favorate', {
       key: favorateProduct['.key'],
       attrs: {
@@ -62202,7 +62867,7 @@ if (false) {
 }
 
 /***/ }),
-/* 237 */
+/* 243 */
 /*!***************************************!*\
   !*** ./src/pages/fovorateDetails.vue ***!
   \***************************************/
@@ -62213,13 +62878,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-9a4bd23c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./fovorateDetails.vue */ 238)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-9a4bd23c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./fovorateDetails.vue */ 244)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./fovorateDetails.vue */ 240),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./fovorateDetails.vue */ 246),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-9a4bd23c","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./fovorateDetails.vue */ 241),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-9a4bd23c","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./fovorateDetails.vue */ 247),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -62251,7 +62916,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 238 */
+/* 244 */
 /*!**************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9a4bd23c","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/fovorateDetails.vue ***!
   \**************************************************************************************************************************************************************************************************************************************************************************************/
@@ -62262,7 +62927,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9a4bd23c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./fovorateDetails.vue */ 239);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9a4bd23c","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./fovorateDetails.vue */ 245);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -62282,7 +62947,7 @@ if(false) {
 }
 
 /***/ }),
-/* 239 */
+/* 245 */
 /*!******************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-9a4bd23c","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/fovorateDetails.vue ***!
   \******************************************************************************************************************************************************************************************************************************************************/
@@ -62301,7 +62966,7 @@ exports.push([module.i, "\n.popup-link[data-v-9a4bd23c]{\n\t\twidth: 100%;\n}\n.
 
 
 /***/ }),
-/* 240 */
+/* 246 */
 /*!*****************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/fovorateDetails.vue ***!
   \*****************************************************************************************************/
@@ -62367,7 +63032,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	},
 	methods:{
         setRating: function(rating){
-      this.rating= rating;
+      		this.rating= rating;
         },
 		likeProduct(productId){
 			this.$store.dispatch('favoriteProduct',productId)
@@ -62383,7 +63048,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 241 */
+/* 247 */
 /*!*************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-9a4bd23c","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/fovorateDetails.vue ***!
   \*************************************************************************************************************************************************************************************************/
@@ -62453,7 +63118,7 @@ if (false) {
 }
 
 /***/ }),
-/* 242 */
+/* 248 */
 /*!****************************************!*\
   !*** ./src/assets/vue/pages/about.vue ***!
   \****************************************/
@@ -62464,9 +63129,9 @@ if (false) {
 var disposed = false
 var Component = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./about.vue */ 243),
+  __webpack_require__(/*! !!../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./about.vue */ 249),
   /* template */
-  __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-34f88360","hasScoped":false}!../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./about.vue */ 244),
+  __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-34f88360","hasScoped":false}!../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./about.vue */ 250),
   /* styles */
   null,
   /* scopeId */
@@ -62498,7 +63163,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 243 */
+/* 249 */
 /*!******************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/assets/vue/pages/about.vue ***!
   \******************************************************************************************************/
@@ -62525,7 +63190,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 244 */
+/* 250 */
 /*!***************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-34f88360","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/assets/vue/pages/about.vue ***!
   \***************************************************************************************************************************************************************************************************/
@@ -62559,7 +63224,7 @@ if (false) {
 }
 
 /***/ }),
-/* 245 */
+/* 251 */
 /*!***************************************!*\
   !*** ./src/assets/vue/pages/form.vue ***!
   \***************************************/
@@ -62570,9 +63235,9 @@ if (false) {
 var disposed = false
 var Component = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./form.vue */ 246),
+  __webpack_require__(/*! !!../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./form.vue */ 252),
   /* template */
-  __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-79e5755e","hasScoped":false}!../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./form.vue */ 247),
+  __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-79e5755e","hasScoped":false}!../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./form.vue */ 253),
   /* styles */
   null,
   /* scopeId */
@@ -62604,7 +63269,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 246 */
+/* 252 */
 /*!*****************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/assets/vue/pages/form.vue ***!
   \*****************************************************************************************************/
@@ -62748,7 +63413,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 247 */
+/* 253 */
 /*!**************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-79e5755e","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/assets/vue/pages/form.vue ***!
   \**************************************************************************************************************************************************************************************************/
@@ -62995,7 +63660,7 @@ if (false) {
 }
 
 /***/ }),
-/* 248 */
+/* 254 */
 /*!************************************************!*\
   !*** ./src/assets/vue/pages/dynamic-route.vue ***!
   \************************************************/
@@ -63006,9 +63671,9 @@ if (false) {
 var disposed = false
 var Component = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./dynamic-route.vue */ 249),
+  __webpack_require__(/*! !!../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./dynamic-route.vue */ 255),
   /* template */
-  __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-12d9f3fe","hasScoped":false}!../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./dynamic-route.vue */ 250),
+  __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-12d9f3fe","hasScoped":false}!../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./dynamic-route.vue */ 256),
   /* styles */
   null,
   /* scopeId */
@@ -63040,7 +63705,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 249 */
+/* 255 */
 /*!**************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/assets/vue/pages/dynamic-route.vue ***!
   \**************************************************************************************************************/
@@ -63083,7 +63748,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 250 */
+/* 256 */
 /*!***********************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-12d9f3fe","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/assets/vue/pages/dynamic-route.vue ***!
   \***********************************************************************************************************************************************************************************************************/
@@ -63131,7 +63796,7 @@ if (false) {
 }
 
 /***/ }),
-/* 251 */
+/* 257 */
 /*!**********************!*\
   !*** ./src/main.vue ***!
   \**********************/
@@ -63142,13 +63807,13 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-0812bedc","scoped":false,"hasInlineConfig":false}!../node_modules/vue-loader/lib/selector?type=styles&index=0!./main.vue */ 252)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-0812bedc","scoped":false,"hasInlineConfig":false}!../node_modules/vue-loader/lib/selector?type=styles&index=0!./main.vue */ 258)
 }
 var Component = __webpack_require__(/*! ../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../node_modules/vue-loader/lib/selector?type=script&index=0!./main.vue */ 254),
+  __webpack_require__(/*! !!../node_modules/vue-loader/lib/selector?type=script&index=0!./main.vue */ 260),
   /* template */
-  __webpack_require__(/*! !../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-0812bedc","hasScoped":false}!../node_modules/vue-loader/lib/selector?type=template&index=0!./main.vue */ 265),
+  __webpack_require__(/*! !../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-0812bedc","hasScoped":false}!../node_modules/vue-loader/lib/selector?type=template&index=0!./main.vue */ 271),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -63180,7 +63845,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 252 */
+/* 258 */
 /*!**********************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-0812bedc","scoped":false,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/main.vue ***!
   \**********************************************************************************************************************************************************************************************************************************************************************/
@@ -63191,7 +63856,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../node_modules/css-loader!../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-0812bedc","scoped":false,"hasInlineConfig":false}!../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./main.vue */ 253);
+var content = __webpack_require__(/*! !../node_modules/css-loader!../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-0812bedc","scoped":false,"hasInlineConfig":false}!../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./main.vue */ 259);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -63211,7 +63876,7 @@ if(false) {
 }
 
 /***/ }),
-/* 253 */
+/* 259 */
 /*!**************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-0812bedc","scoped":false,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/main.vue ***!
   \**************************************************************************************************************************************************************************************************************************************/
@@ -63230,7 +63895,7 @@ exports.push([module.i, "\n.navbar-fixed .page-content, .navbar-through .page-co
 
 
 /***/ }),
-/* 254 */
+/* 260 */
 /*!************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/main.vue ***!
   \************************************************************************************/
@@ -63240,7 +63905,7 @@ exports.push([module.i, "\n.navbar-fixed .page-content, .navbar-through .page-co
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_products_vue__ = __webpack_require__(/*! ./pages/products.vue */ 255);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_products_vue__ = __webpack_require__(/*! ./pages/products.vue */ 261);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_products_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__pages_products_vue__);
 //
 //
@@ -63389,7 +64054,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 255 */
+/* 261 */
 /*!********************************!*\
   !*** ./src/pages/products.vue ***!
   \********************************/
@@ -63400,13 +64065,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-621aabb2","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./products.vue */ 256)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-621aabb2","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./products.vue */ 262)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./products.vue */ 258),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./products.vue */ 264),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-621aabb2","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./products.vue */ 264),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-621aabb2","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./products.vue */ 270),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -63438,7 +64103,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 256 */
+/* 262 */
 /*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-621aabb2","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/products.vue ***!
   \*******************************************************************************************************************************************************************************************************************************************************************************/
@@ -63449,7 +64114,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-621aabb2","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./products.vue */ 257);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-621aabb2","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./products.vue */ 263);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -63469,7 +64134,7 @@ if(false) {
 }
 
 /***/ }),
-/* 257 */
+/* 263 */
 /*!***********************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-621aabb2","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/products.vue ***!
   \***********************************************************************************************************************************************************************************************************************************************/
@@ -63488,7 +64153,7 @@ exports.push([module.i, "\n.popup-link[data-v-621aabb2]{\n\twidth: 100%;\n}\nli[
 
 
 /***/ }),
-/* 258 */
+/* 264 */
 /*!**********************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/products.vue ***!
   \**********************************************************************************************/
@@ -63498,8 +64163,9 @@ exports.push([module.i, "\n.popup-link[data-v-621aabb2]{\n\twidth: 100%;\n}\nli[
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__product__ = __webpack_require__(/*! ./product */ 259);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__product__ = __webpack_require__(/*! ./product */ 265);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__product___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__product__);
+//
 //
 //
 //
@@ -63548,7 +64214,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 259 */
+/* 265 */
 /*!*******************************!*\
   !*** ./src/pages/product.vue ***!
   \*******************************/
@@ -63559,13 +64225,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-0b4de791","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./product.vue */ 260)
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-0b4de791","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./product.vue */ 266)
 }
 var Component = __webpack_require__(/*! ../../node_modules/vue-loader/lib/component-normalizer */ 3)(
   /* script */
-  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./product.vue */ 262),
+  __webpack_require__(/*! !!../../node_modules/vue-loader/lib/selector?type=script&index=0!./product.vue */ 268),
   /* template */
-  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-0b4de791","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./product.vue */ 263),
+  __webpack_require__(/*! !../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-0b4de791","hasScoped":true}!../../node_modules/vue-loader/lib/selector?type=template&index=0!./product.vue */ 269),
   /* styles */
   injectStyle,
   /* scopeId */
@@ -63597,7 +64263,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 260 */
+/* 266 */
 /*!******************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-0b4de791","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/product.vue ***!
   \******************************************************************************************************************************************************************************************************************************************************************************/
@@ -63608,7 +64274,7 @@ module.exports = Component.exports
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-0b4de791","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./product.vue */ 261);
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-0b4de791","scoped":true,"hasInlineConfig":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./product.vue */ 267);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -63628,7 +64294,7 @@ if(false) {
 }
 
 /***/ }),
-/* 261 */
+/* 267 */
 /*!**********************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-0b4de791","scoped":true,"hasInlineConfig":false}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./src/pages/product.vue ***!
   \**********************************************************************************************************************************************************************************************************************************************/
@@ -63647,7 +64313,7 @@ exports.push([module.i, "\n.popup-link[data-v-0b4de791]{\n\twidth: 100%;\n}\nli[
 
 
 /***/ }),
-/* 262 */
+/* 268 */
 /*!*********************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/product.vue ***!
   \*********************************************************************************************/
@@ -63722,7 +64388,7 @@ props:['productId','product'],
 
 
 /***/ }),
-/* 263 */
+/* 269 */
 /*!*****************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-0b4de791","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/product.vue ***!
   \*****************************************************************************************************************************************************************************************/
@@ -63751,7 +64417,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   })])], 1), _vm._v(" "), _c('f7-card-footer', [_c('span', [_vm._v(_vm._s(_vm.product.name))]), _vm._v(" "), (_vm.isUserSignedIn) ? _c('div', [(!_vm.userLiked) ? _c('f7-link', {
     attrs: {
-      "open-popup": '#popup' + _vm.product.id
+      "open-popup": '#favpopup' + _vm.product.id
     }
   }, [_vm._v("LIKE")]) : _c('button', {
     staticClass: "button",
@@ -63774,7 +64440,7 @@ if (false) {
 }
 
 /***/ }),
-/* 264 */
+/* 270 */
 /*!******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-621aabb2","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/products.vue ***!
   \******************************************************************************************************************************************************************************************/
@@ -63795,6 +64461,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "product": product
       }
+    }), _vm._v(" "), _c('sharepopup', {
+      attrs: {
+        "product": product
+      }
     })], 1)
   })) : _vm._e()], 1)
 },staticRenderFns: []}
@@ -63807,7 +64477,7 @@ if (false) {
 }
 
 /***/ }),
-/* 265 */
+/* 271 */
 /*!*********************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-0812bedc","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/main.vue ***!
   \*********************************************************************************************************************************************************************************/
@@ -63867,7 +64537,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "width": "150px"
     },
     attrs: {
-      "src": __webpack_require__(/*! ./assets/images/logo.png */ 266)
+      "src": __webpack_require__(/*! ./assets/images/logo.png */ 272)
     }
   })]), _vm._v(" "), _c('f7-nav-right', [(_vm.isAdmin) ? _c('f7-link', {
     attrs: {
@@ -63975,7 +64645,7 @@ if (false) {
 }
 
 /***/ }),
-/* 266 */
+/* 272 */
 /*!************************************!*\
   !*** ./src/assets/images/logo.png ***!
   \************************************/
@@ -63986,7 +64656,7 @@ if (false) {
 module.exports = __webpack_require__.p + "logo.png?42d671014cf4bb6cc1c09d3cff97902d";
 
 /***/ }),
-/* 267 */
+/* 273 */
 /*!**********************************************!*\
   !*** ./node_modules/vuefire/dist/vuefire.js ***!
   \**********************************************/
