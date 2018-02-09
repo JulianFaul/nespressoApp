@@ -8,9 +8,10 @@
 					</f7-link>
 						<f7-card-footer>
 							<span>{{product.name}}</span>
+							
 						<div v-if="isUserSignedIn">
-			<f7-link v-if="!userLiked" :open-popup="'#favpopup' + product.id">LIKE</f7-link>
-			<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
+						<f7-link v-if="!userLiked" :open-popup="'#favpopup' + product.id">LIKE</f7-link>
+					<button v-else @click="unlikeProduct(product.id)" class="button"  type="submit">Unlike</button>
 						</div>
 						</f7-card-footer>
 				</f7-card>
@@ -46,7 +47,8 @@ props:['productId','product'],
 	},
 	isUserSignedIn(){
 		  return this.$store.getters.user !== null && this.$store.getters.user !== undefined
-	  },
+	  }
+	  
 	},
 	methods:{
 		likeProduct(productId){

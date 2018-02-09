@@ -170,6 +170,7 @@ export const store = new Vuex.Store({
                 .then(
                 (data) => {
                     const products = []
+                    const cups = []
                     const obj = data.val()
                     for (let key in obj) {
                         products.push({
@@ -180,9 +181,11 @@ export const store = new Vuex.Store({
                             intensity: obj[key].intensity,
                             imageUrl: obj[key].imageUrl,
                             price: obj[key].price,
-                            range: obj[key].range
+                            range: obj[key].range,
+                            cupSize: obj[key].cupSize
                         })
                     }
+                   console.log(products)
                     commit('setLoadedProducts', products)
                     commit('setLoading', false)
                 })
@@ -201,7 +204,8 @@ export const store = new Vuex.Store({
                 intensity: payload.intensity,
                 imageUrl: payload.imageUrl,
                 price: payload.price,
-                range: payload.range
+                range: payload.range,
+                cupSize: payload.cups
             }
             firebase.database().ref('products').push(product).then(
                 (data) => {
