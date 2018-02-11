@@ -6,7 +6,7 @@
 		<!-- <f7-statusbar></f7-statusbar> -->
 		
 		<!-- Left Panel -->
-		<!-- <f7-panel left reveal layout="dark">
+		<!--<f7-panel left reveal layout="dark">
 			<f7-view id="left-panel-view" navbar-through :dynamic-navbar="true">
 				<f7-navbar title="Left Panel"></f7-navbar>
 				<f7-pages>
@@ -27,22 +27,36 @@
 					</f7-page>
 				</f7-pages>
 			</f7-view>
-		</f7-panel> -->
+		</f7-panel>-->
 		
 		<!-- Right Panel -->
-		<f7-panel v-if="isAdmin && isUserSignedIn" right cover layout="dark">
-			<f7-view id="right-panel-view" navbar-through :dynamic-navbar="true">
-				<f7-navbar title="Right Panel" sliding></f7-navbar>
+		<f7-panel right cover layout="dark">
+			<f7-view id="right-panel-view" >
+				<f7-navbar title="Filter by:" sliding></f7-navbar>
 				<f7-pages>
 					<f7-page>
 						<f7-block-title></f7-block-title>
 						<f7-list>
-							<!-- <f7-list-item v-if="!isUserSignedIn" link="/login/" title="login" link-view="#main-view" link-close-panel></f7-list-item> -->
-							<!-- <f7-list-item v-if="!isUserSignedIn" link="/signup/" title="signup" link-view="#main-view" link-close-panel></f7-list-item> -->
-							<!-- <f7-list-item v-if="isUserSignedIn" link="/profile/" title="profile" link-view="#main-view" link-close-panel></f7-list-item> -->
-							<f7-list-item v-if="isAdmin && isUserSignedIn" link="/admin/" title="Admin" link-view="#main-view" link-close-panel></f7-list-item>
-						
-							
+							<f7-list-item>
+								<select v-model="rangeSelect">
+									<option value="all">Range</option>
+									<option v-for="range in productRanges">{{range}}</option>
+								</select>
+							</f7-list-item>
+							<f7-list-item>
+								<select type="text" v-model="intensity">
+									<option value="all">Intensity</option>
+									<option v-for="filterProduct in filterList">{{filterProduct.intensity}}</option>
+								</select>
+							</f7-list-item>
+							<f7-list-item>
+								<select type="text" v-model="cupSize">
+								<option value="all"> Cup Size</option>
+								<option value="Espresso">Espresso</option>
+								<option value="Ristretto">Ristretto</option>
+								</select>
+							</f7-list-item>
+							<f7-button @click="clearFilters" style="width:90%; margin:20px auto; background-color:#ffffff; color:black; border:none;" v-if="startedFilter" link-view="#main-view" link-close-panel>Clear Filters</f7-button>
 						</f7-list>
 					</f7-page>
 				</f7-pages>
@@ -52,14 +66,16 @@
 		<!-- Main Views -->
 		<f7-views>
 			
-			<f7-view id="main-view" navbar-through :dynamic-navbar="true" main>
+			<f7-view id="main-view"  main>
 				<!-- Navbar -->
 		
 				<f7-navbar layout="dark" style="color:#ffffff;">
+
 					<f7-nav-center sliding><img style="width:150px;" src="./assets/images/logo.png"/></f7-nav-center>
 					<f7-nav-right>
-						<f7-link v-if="isAdmin" icon="icon-bars" open-panel="right"></f7-link>
+						<f7-link open-panel="right"><i class="f7-icons size-50">filter</i></f7-link>
 					</f7-nav-right>
+					
 				</f7-navbar>
 				 <div  class="toolbar layout-dark  toolbar-bottom-md">
 					<div class="toolbar-inner">
@@ -77,7 +93,24 @@
       		<div class="preloader color-black" style="width: 50px;height: 50px;top: 50%;position: absolute;left: 0;right: 0;margin: 0 auto;"></div>
 		</div>
 	</div>
-						<products-list></products-list>
+						<div>
+	<f7-block v-if="!loading">
+		
+
+
+<f7-grid v-if="filterList == ''">
+</f7-grid>
+
+<f7-grid v-for="filterProduct in filterList" v-bind:key="filterProduct['.key']">
+	<product :product="filterProduct" :productId="filterProduct.id"></product>
+	<likePopup :product="filterProduct"></likePopup>
+	<sharepopup :product="filterProduct"></sharepopup>
+</f7-grid>
+	
+	</f7-block>
+
+
+</div>
 					</f7-page>	
 				</f7-pages>
 			</f7-view>
@@ -117,14 +150,84 @@
 
 <script>
 import products from "./pages/products.vue"
+import product from "./pages/product.vue"
 	export default {
-  data() {
-    return {};
-  },
+   data() {
+    return {
+		rangeSelect: 'all',
+		intensity: 'all',
+		cupSize: 'all',
+		filteredList:[]
+		};
+	},
   components:{
-	  "products-list": products
+	  "products-list": products,
+			"product": product
+
   },
+    methods:{
+	  navigate(){
+		  this.$f7.getCurrentView().router.loadPage({pageName:'home-page',animatePages: true})
+	  },
+	  clearFilters(){
+		this.rangeSelect = 'all';
+		this.intensity = 'all';
+		this.cupSize = 'all';
+	  },
+  beautifyCups(productCups){
+		
+			if(productCups == undefined || productCups == ""){
+				
+			}else{
+				return productCups.toString().toLowerCase().indexOf(this.cupSize.toLowerCase()) > -1
+				
+			}
+			
+			
+		}
+	},
   computed:{
+	  filterList(){
+		
+		const rangeFilter = entry => 
+           (this.rangeSelect == 'all') || 
+		   (entry.range === this.rangeSelect);
+		   
+		const intensFilter = entry => 
+           (this.intensity == 'all') || 
+		   (entry.intensity === this.intensity);
+		   
+		const cupFilter = entry =>
+			(this.cupSize == 'all') ||
+			(this.beautifyCups(entry.cupSize) === true);
+		
+		const reducer = (accumulator, entry) => {
+			if (rangeFilter(entry) && intensFilter(entry) && cupFilter(entry))
+			accumulator.push(entry);
+			return accumulator;
+		}
+
+  			return this.filteredList.reduce(reducer, []);
+		
+		
+		},
+		user(){
+			return this.$store.state.user
+		},
+		products(){
+			return this.filteredList = this.$store.getters.loadedProducts
+		},
+		startedFilter(){
+			if(this.rangeSelect != "all" || this.cupSize != "all" || this.intensity != "all"){
+				return true
+			}
+		},
+		productRanges () {
+  			return [...new Set(this.products.map(p => p.range))]
+		},
+		productIntensity () {
+  			return [...new Set(this.filteredList.map(p => p.intensity))]
+		},
 	  loading(){
 			return this.$store.getters.loading
 		},
@@ -134,13 +237,8 @@ import products from "./pages/products.vue"
 	  isAdmin(){
 		  return this.$store.getters.isAdmin
 	  }
-  },
-  methods:{
-	  navigate(){
-		  this.$f7.getCurrentView().router.loadPage({pageName:'home-page',animatePages: true})
-		 
-	  }
   }
+
 };
 </script>
 <style>
@@ -162,5 +260,11 @@ import products from "./pages/products.vue"
 }
 	.vue-star-rating {
     margin: 7px auto;
+}
+[data-page|="home-page"] .navbar .navbar-inner .right {
+   display:block !important;
+}
+.navbar .navbar-inner .right{
+	display:none;
 }
 </style>

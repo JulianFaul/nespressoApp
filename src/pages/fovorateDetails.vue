@@ -2,7 +2,7 @@
 
 	<f7-page style="background-color:#ffffff;">
      
-		<!-- <f7-navbar title="favDetails" back-link="Back" sliding></f7-navbar> -->
+		<f7-navbar title="favDetails" back-link="Back" sliding></f7-navbar>
 			<f7-block  style="">
 			<div style="padding-top:20px; width: 250px;margin: 0 auto;"><img :src="favorateProduct.imageUrl"></div>
             
@@ -76,5 +76,6 @@ export default {
     .vue-star-rating{
 
     }
+
 
 </style>

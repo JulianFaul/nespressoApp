@@ -1,30 +1,7 @@
 <template>
 <div>
 	<f7-block v-if="!loading">
-		<select v-model="rangeSelect">
-			<option disabled value="">Select Range</option>
-			<option value="all">All</option>
-			<option value="intenso">Intenso</option>
-			<option value="blue">blue</option>
-		</select>
-		<select type="text" v-model="intensity">
-    	  	<option> all</option>
-    	  	<option value="1">1</option>
-    	  	<option value="3">3</option>
-    	  	<option value="4">4</option>
-    	  	<option value="5">5</option>
-    	  	<option value="6">6</option>
-		  	<option value="8">8</option>
-    	 	<option value="9">9</option>
-			<option value="10">10</option>
-		    <option value="11">11</option>
-			<option value="12">12</option>
-    	</select>
-		<select type="text" v-model="cupSize">
-    	  <option> all</option>
-    	  <option value="Espresso">Espresso</option>
-    	  <option value="Ristretto">Ristretto</option>
-    	</select>
+		
 
 
 <f7-grid v-if="filterList == ''">
@@ -39,6 +16,7 @@
 		
 		</f7-grid>
 	</f7-block>
+
 
 </div>
 </template>
@@ -110,6 +88,12 @@ export default {
 			if(this.rangeSelect != "all" || this.cupSize != "all"){
 				return true
 			}
+		},
+		productRanges () {
+  			return [...new Set(this.products.map(p => p.range))]
+		},
+		productIntensity () {
+  			return [...new Set(this.filteredList.map(p => p.intensity))]
 		}
 	// 	filteredItems() {
     //   return this.$store.getters.loadedProducts.filter(item => {
@@ -134,5 +118,8 @@ export default {
 	}
 	li{
 		list-style-type: none;
+	}
+	option{
+		color:black;
 	}
 </style>
